@@ -14,17 +14,11 @@ jobs:
       - name: Checkout repository code 🛎️
         uses: actions/checkout@v4 # Action to checkout your repository code
 
-       - name: Prepare static files for deployment 📦
-            run: |
-              # Create a temporary directory to build the deployment content
-              mkdir _site
-              # Use rsync to copy all files and directories EXCEPT the _site directory itself
-              # -a: archive mode (retains permissions, timestamps, etc.)
-              # --exclude=_site/: excludes the _site directory from being copied into itself
-              rsync -av --exclude='_site/' ./* _site/
-
-              # Ensure .nojekyll is present in the output for good measure
-              touch _site/.nojekyll
+      - name: Prepare static files for deployment 📦
+        run: |
+          mkdir _site
+          rsync -av --exclude='_site/' ./* _site/
+          touch _site/.nojekyll
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3 # An action specifically for deploying to gh-pages branch
