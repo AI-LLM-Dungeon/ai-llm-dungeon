@@ -1,3 +1,4 @@
+# This is a test comment.
 #!/bin/bash
 set -e
 echo "Entering the AI-LLM-Dungeon..."
