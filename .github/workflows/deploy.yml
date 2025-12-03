@@ -1,0 +1,33 @@
+name: Deploy Static Files to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Trigger this workflow when changes are pushed to the 'main' branch
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # The type of runner to use (e.g., virtual machine)
+
+    steps:
+      - name: Checkout repository code 🛎️
+        uses: actions/checkout@v4 # Action to checkout your repository code
+
+      - name: Prepare static files for deployment 📦
+        run: |
+          # Create a temporary directory to build the deployment content
+          mkdir _site
+          # Copy all files from the root of your main branch into _site
+          # This ensures everything is copied as-is, preserving names and extensions.
+          cp -R ./* _site/
+          # Ensure .nojekyll is present in the output for good measure (though not strictly needed now)
+          touch _site/.nojekyll
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: peaceiris/actions-gh-pages@v3 # An action specifically for deploying to gh-pages branch
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Automatically provided GitHub token for authentication
+          publish_dir: ./_site # The directory containing the files to publish
+          publish_branch: gh-pages # The target branch to publish to (will be created if it doesn't exist)
+          # cname: yourdomain.com # Uncomment and replace if you use a custom domain
