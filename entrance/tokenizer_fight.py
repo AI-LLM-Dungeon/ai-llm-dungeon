@@ -1,4 +1,3 @@
-import sys
 import tiktoken
 
 def get_tokenizer(model_name="cl100k_base"):
@@ -16,41 +15,15 @@ def get_tokenizer(model_name="cl100k_base"):
         encoding = tiktoken.get_encoding("cl100k_base")
     return encoding
 
-def count_tokens(text: str, encoding) -> int:
-    """Counts tokens in a given text using the provided encoding."""
-    tokens = encoding.encode(text)
-    return len(tokens)
-
-def display_game_intro():
-    """Prints the intro and instructions for Tokenizer Tomb."""
-    print("========================================")
-    print("   WELCOME TO AI-LLM-DUNGEON          ")
-    print("========================================")
-    print("# TOKENIZER TOMB (Level 0)             ")
-    print("\nYou awaken in darkness. Ancient carvings whisper:")
-    print("\"Tokens are the atoms of language models.\"")
-    print("\n**Your quest:** Defeat the Subword Goblin by counting tokens.")
-    print("\n**Commands:**")
-    print("- `python tokenizer_fight.py \"your text here\"` → fight!")
-    print("- Win by keeping under 10 tokens")
-    print("- `ls` → look around")
-    print("- `cd ..` → flee (coward)")
-    print("\nNext level coming soon: Temperature Tavern")
-    print("\nYour first battle begins NOW:")
-    print("python tokenizer_fight.py 'Hello, world!'")
-    print("========================================")
-
-def main():
-    if len(sys.argv) < 2:
-        display_game_intro()
-        # If no arguments, we just show the intro. The player needs to provide text.
+def perform_tokenizer_fight(user_text: str):
+    """
+    Performs the tokenizer fight logic for a given text and prints results.
+    """
+    if not user_text:
+        print("Please provide some text to fight the Subword Goblin!")
         return
 
-    user_text = sys.argv[1]
-    
-    # Initialize tokenizer (using cl100k_base as it's common for modern OpenAI models)
     tokenizer = get_tokenizer("cl100k_base")
-
     token_count = count_tokens(user_text, tokenizer)
 
     print("\n--- TOKENIZER FIGHT RESULTS ---")
@@ -72,5 +45,9 @@ def main():
 
     print("-------------------------------")
 
-if __name__ == "__main__":
-    main()
+def count_tokens(text: str, encoding) -> int:
+    """Counts tokens in a given text using the provided encoding."""
+    tokens = encoding.encode(text)
+    return len(tokens)
+
+# No __main__ block here. It's now a module.
