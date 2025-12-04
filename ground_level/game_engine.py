@@ -149,18 +149,19 @@ class GameEngine:
         
         # Room 0: User types 'learn' to begin (only time 'learn' is used)
         if command in ["learn", "teach", "lesson", "next"]:
-            if not self.player.has_completed_objective("room0_lesson1"):
+            if not self.player.has_completed_objective("room0_lesson1_taught"):
                 display_shaman()
                 self._teach_install()
+                self.player.complete_objective("room0_lesson1_taught")
             else:
                 print("\n💡 Hint: You've already started your training!")
                 print("Try practicing the commands you've learned.")
         
         # Lesson 1: User must type 'ollama' to complete
         elif command == "ollama":
-            if not self.player.has_completed_objective("room0_lesson1"):
+            if not self.player.has_completed_objective("room0_lesson1_taught"):
                 print("\n⚠️  Please type 'learn' first to begin your training.")
-            elif self.player.has_completed_objective("room0_lesson2"):
+            elif self.player.has_completed_objective("room0_lesson1"):
                 print("\n✅ You've already learned this command! Continue with the next lesson.")
             else:
                 display_shaman()
@@ -230,14 +231,14 @@ class GameEngine:
             else:
                 print("\n⚠️  The Shaman blocks your path.")
                 print("'You must complete all lessons first, young one.'")
-                if not self.player.has_completed_objective("room0_lesson1"):
+                if not self.player.has_completed_objective("room0_lesson1_taught"):
                     print("Hint: Type 'learn' to begin your training.")
                 else:
                     print("Hint: Practice the commands you've learned!")
         
         else:
             print(f"\nUnknown command. Type 'help' for available commands.")
-            if not self.player.has_completed_objective("room0_lesson1"):
+            if not self.player.has_completed_objective("room0_lesson1_taught"):
                 print("Hint: Type 'learn' to receive the Shaman's teachings!")
     
     def _teach_install(self) -> None:
