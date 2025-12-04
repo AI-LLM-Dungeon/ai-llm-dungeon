@@ -16,7 +16,7 @@ GROUND_LEVEL_BANNER = r"""
 ╚════════════════════════════════════════════════════════════╝
 """
 
-# Certificate of Ollama Mastery
+# Certificate awarded when player completes Ground Level
 CERTIFICATE_ART = r"""
 ╔══════════════════════════════════════════════════════════════╗
 ║              CERTIFICATE OF OLLAMA MASTERY                   ║
@@ -30,7 +30,7 @@ CERTIFICATE_ART = r"""
 ╚══════════════════════════════════════════════════════════════╝
 """
 
-# Descend/transition art
+# Visual indicator for descending to deeper dungeon levels
 DESCEND_ART = r"""
      ⬇️  ⬇️  ⬇️  ⬇️  ⬇️
     The stairs descend into
