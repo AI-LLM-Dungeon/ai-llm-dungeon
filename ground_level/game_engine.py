@@ -422,7 +422,6 @@ class GameEngine:
             print(f"Unknown command. Type 'help' for available commands.")
             print("Hint: First use 'ollama rm phi3:mini', then 'ollama pull llama3:8b'!")
     
-    
     def _handle_room4_commands(self, command: str) -> None:
         """Handle commands specific to Room 4 (Victory Chamber)."""
         if command == "west":
