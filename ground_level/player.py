@@ -26,6 +26,7 @@ class Player:
         self.knowledge_points: int = 0
         self.unlocked_tips: Set[str] = set()
         self.completed_objectives: Set[str] = set()
+        self.discovered_password: bool = False  # Track if player discovered victory password
     
     def move_to_room(self, room_id: int) -> None:
         """
@@ -114,6 +115,19 @@ class Player:
             True if completed, False otherwise
         """
         return objective_id in self.completed_objectives
+    
+    def discover_password(self) -> None:
+        """Mark that the player has discovered the victory password."""
+        self.discovered_password = True
+    
+    def has_discovered_password(self) -> bool:
+        """
+        Check if the player has discovered the victory password.
+        
+        Returns:
+            True if password discovered, False otherwise
+        """
+        return self.discovered_password
     
     def get_status(self) -> str:
         """

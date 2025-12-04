@@ -115,6 +115,8 @@ dungeon depths, you must first learn the sacred commands of Ollama."
 
 "I will teach you the six fundamental commands that every Ollama master must know.
 Listen carefully, for these commands will be your tools in the challenges ahead."
+
+💡 Hint: Type 'learn' to begin your training with the Shaman!
         """
         
         objectives = [
@@ -183,12 +185,12 @@ Some succeed, some fail. Your companion's strength will be tested here."
 A riddle materializes in glowing text before you:
   "How many 'r's are in 'strawberry'?"
 
-Your sidekick Phi3 Mini looks eager to help... but will they succeed?
+To consult your sidekick, use: ollama run phi3:mini
         """
         
         objectives = [
-            "Have your sidekick attempt the riddle",
-            "Observe the limitations of small models"
+            "Use 'ollama run phi3:mini' to consult your sidekick",
+            "Ask about the strawberry riddle"
         ]
         
         super().__init__(2, "The Riddle Hall", description.strip(), objectives)
@@ -214,7 +216,7 @@ to make room for a more powerful ally."
 On the wall, you see Ollama commands carved in stone:
   1. Remove your current model: ollama rm phi3:mini
   2. Pull a more powerful model: ollama pull llama3:8b
-  3. Return to retry the riddle with greater strength
+  3. Return WEST to retry the riddle with greater strength
 
 The forge master awaits your command.
         """
@@ -222,7 +224,7 @@ The forge master awaits your command.
         objectives = [
             "Remove Phi3 Mini: ollama rm phi3:mini",
             "Pull and summon Llama3 8b: ollama pull llama3:8b",
-            "Prepare to retry the riddle"
+            "Return west to retry the riddle"
         ]
         
         super().__init__(3, "The Upgrade Forge", description.strip(), objectives)
@@ -233,25 +235,22 @@ class VictoryChamber(Room):
     """
     Room 4: The Victory Chamber
     
-    Retry the riddle with Llama3 8b and celebrate success.
+    The final chamber that requires the password to enter and complete.
     """
     
     def __init__(self):
         description = """
-You return to face the Oracle once more, this time with Llama3 8b at your side.
-The Oracle regards your new companion with respect.
+You stand before the sealed Victory Chamber. An ancient lock bars your way,
+with glowing runes that read:
 
-"Ah, you have learned well. A more capable ally stands with you now.
-Let us see if greater power brings greater wisdom."
+"Only those who have proven their worth with the power of Llama3
+may enter this sacred hall. Speak the password to unlock the chamber."
 
-The same riddle appears before you:
-  "How many 'r's are in 'strawberry'?"
-
-But this time, you have the strength to succeed...
+You must enter the password revealed to you by Llama3 8b.
         """
         
         objectives = [
-            "Have Llama3 8b attempt the riddle",
+            "Enter the password to unlock the Victory Chamber",
             "Achieve victory and complete the Ground Level"
         ]
         
