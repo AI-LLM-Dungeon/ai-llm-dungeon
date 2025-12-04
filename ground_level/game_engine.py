@@ -230,14 +230,15 @@ class GameEngine:
         """Teach the player about ollama list."""
         print("\n=== LESSON 3: Listing Your Models ===\n")
         print("The Shaman explains:")
-        print("'To see which models you have installed, use: ollama list'\n")
+        print("'To see which models you have installed, use: ollama list'")
+        print("'Let me show you...'\n")
         
         # Show empty list first
-        print("If you haven't installed any models yet, you'll see an empty list:")
         self.ollama.list_models()
         
-        print("'Later, after you pull models, they will appear in this list.")
-        print("This helps you track which models are available on your system.'\n")
+        print("The Shaman nods:")
+        print("'You haven't pulled any models yet. Let's learn how to do that next!")
+        print("This command will be useful to verify your models after pulling them.'\n")
         
         self.player.complete_objective("room0_lesson3")
         print("✅ Lesson 3 Complete!")
@@ -366,12 +367,27 @@ class GameEngine:
             else:
                 print("⚠️  You must complete this room's objectives first!")
         
+        elif command == "ollama run phi3:mini":
+            self._run_phi3_riddle()
+        
+        elif command == "ollama run llama3:8b":
+            self._run_llama3_riddle()
+        
         elif command in ["riddle", "attempt", "try riddle", "solve"]:
-            self._attempt_riddle_room2()
+            print("💡 Hint: Use the Ollama run command to consult your sidekick!")
+            if self.player.active_sidekick:
+                if self.player.active_sidekick.name == "Phi3 Mini":
+                    print("Try: ollama run phi3:mini")
+                elif self.player.active_sidekick.name == "Llama3 8b":
+                    print("Try: ollama run llama3:8b")
         
         else:
             print(f"Unknown command. Type 'help' for available commands.")
-            print("Hint: Try 'riddle' to have your sidekick attempt the puzzle!")
+            if self.player.active_sidekick:
+                if self.player.active_sidekick.name == "Phi3 Mini":
+                    print("Hint: Try 'ollama run phi3:mini' to consult your sidekick!")
+                elif self.player.active_sidekick.name == "Llama3 8b":
+                    print("Hint: Try 'ollama run llama3:8b' to consult your sidekick!")
     
     def _handle_room3_commands(self, command: str) -> None:
         """Handle commands specific to Room 3 (Upgrade Forge)."""
@@ -379,10 +395,14 @@ class GameEngine:
             self._move_to_room(2)
         
         elif command == "east":
-            if self.player.has_completed_objective("room3_complete"):
-                self._move_to_room(4)
-            else:
+            if not self.player.has_completed_objective("room3_complete"):
                 print("⚠️  You must complete this room's objectives first!")
+            elif not self.player.has_discovered_password():
+                print("⚠️  The Victory Chamber is locked!")
+                print("You need to discover the password first.")
+                print("Hint: Go WEST to the Riddle Hall and use Llama3 8b to solve the riddle!")
+            else:
+                self._move_to_room(4)
         
         elif command in ["ollama rm phi3:mini", "remove", "remove phi3", "remove phi3 mini"]:
             self._remove_phi3_mini()
@@ -407,12 +427,12 @@ class GameEngine:
         if command == "west":
             self._move_to_room(3)
         
-        elif command in ["riddle", "attempt", "try riddle", "solve"]:
-            self._attempt_riddle_room4()
+        elif command.lower() == "ollama appr3nt1c3":
+            self._unlock_victory()
         
         else:
             print(f"Unknown command. Type 'help' for available commands.")
-            print("Hint: Try 'riddle' to have Llama3 8b attempt the puzzle!")
+            print("Hint: Enter the password revealed by Llama3 8b!")
     
     def _attempt_riddle_room2(self) -> None:
         """Handle riddle attempt in Room 2 with Phi3 Mini."""
@@ -490,7 +510,126 @@ class GameEngine:
         self.current_room.mark_completed()
         
         print("\n✅ Objectives Complete!")
-        print("You now have a powerful ally! Head east to retry the riddle.")
+        print("You now have a powerful ally!")
+        print("Head WEST to the Riddle Hall to retry the puzzle with greater strength!")
+    
+    def _run_phi3_riddle(self) -> None:
+        """Handle running phi3:mini with the strawberry riddle."""
+        if not self.player.has_active_sidekick():
+            print("⚠️  You need to summon Phi3 Mini first!")
+            print("Go back to the Summoning Chamber (west) if you haven't summoned it yet.")
+            return
+        
+        if self.player.active_sidekick.name != "Phi3 Mini":
+            print("⚠️  You don't have Phi3 Mini as your active sidekick.")
+            if self.player.active_sidekick.name == "Llama3 8b":
+                print("It looks like you already upgraded! Try: ollama run llama3:8b")
+            return
+        
+        # Simulate interactive session
+        print("\n🤖 Starting interactive session with phi3:mini...")
+        print("Type your question, or type '/bye' to exit.\n")
+        
+        # Wait for user input
+        user_question = input(">>> ").strip()
+        
+        if user_question.lower() in ["/bye", "exit", "quit"]:
+            print("Exiting interactive session.\n")
+            return
+        
+        # Check if it's about strawberry
+        if "strawberry" in user_question.lower() or "r" in user_question.lower():
+            # Get the riddle and have phi3 attempt it
+            riddle = self.puzzles["riddle_01"]
+            success, response = self.player.active_sidekick.attempt_riddle(riddle)
+            
+            print(f"\nPhi3 Mini: {response}\n")
+            print(">>> /bye")
+            print("Exiting interactive session.\n")
+            
+            # Provide feedback
+            if not success:
+                print("💡 Learning Moment:")
+                print("Phi3 Mini is a small, efficient model but struggles with")
+                print("certain tasks like careful counting. This is a trade-off:")
+                print("smaller size = faster but less capable.")
+            else:
+                print("💡 Learning Moment:")
+                print("Phi3 Mini got lucky this time! But with only a 20% success rate,")
+                print("small models aren't reliable for complex tasks like precise counting.")
+                print("Larger models have higher success rates for challenging problems.")
+            
+            # Unlock tip
+            self.player.unlock_tip("tip_01", self.tips["tip_01"]["text"])
+            
+            # Mark objective complete
+            self.player.complete_objective("room2_complete")
+            self.current_room.mark_completed()
+            
+            print("\n✅ Objective Complete!")
+            print("You've learned about the trade-offs of small models.")
+            print("\nProceed east to the Upgrade Forge to get a more powerful ally!")
+        else:
+            print(f"\nPhi3 Mini: That's an interesting question! However, the Oracle")
+            print("is waiting for you to ask about the riddle: 'How many r's are in strawberry?'")
+            print("\n>>> /bye")
+            print("Exiting interactive session.\n")
+    
+    def _run_llama3_riddle(self) -> None:
+        """Handle running llama3:8b with the strawberry riddle."""
+        if not self.player.has_active_sidekick():
+            print("⚠️  You need to summon a sidekick first!")
+            return
+        
+        if self.player.active_sidekick.name != "Llama3 8b":
+            print("⚠️  You don't have Llama3 8b as your active sidekick.")
+            if self.player.active_sidekick.name == "Phi3 Mini":
+                print("You need to upgrade first. Go east to the Upgrade Forge!")
+            return
+        
+        # Simulate interactive session
+        print("\n🤖 Starting interactive session with llama3:8b...")
+        print("Type your question, or type '/bye' to exit.\n")
+        
+        # Wait for user input
+        user_question = input(">>> ").strip()
+        
+        if user_question.lower() in ["/bye", "exit", "quit"]:
+            print("Exiting interactive session.\n")
+            return
+        
+        # Check if it's about strawberry
+        if "strawberry" in user_question.lower() or "r" in user_question.lower():
+            # Get the riddle and have llama3 attempt it (should succeed)
+            riddle = self.puzzles["riddle_01"]
+            success, response = self.player.active_sidekick.attempt_riddle(riddle)
+            
+            print(f"\nLlama3 8b: {response}\n")
+            
+            if success:
+                print("The Oracle's eyes glow with approval!")
+                print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
+                print("The Oracle reveals: 'The password to unlock it is: Ollama Appr3nt1c3'")
+                print("\n>>> /bye")
+                print("Exiting interactive session.\n")
+                
+                # Unlock tip
+                self.player.unlock_tip("tip_02", self.tips["tip_02"]["text"])
+                
+                # Mark that password is discovered
+                self.player.discover_password()
+                
+                print("🔑 Password discovered! You can now proceed to the Victory Chamber.")
+                print("Head EAST through the Forge to reach the Victory Chamber!")
+            else:
+                print("\n>>> /bye")
+                print("Exiting interactive session.\n")
+                print("(Rare case: Even large models can occasionally fail. Try again!)")
+        else:
+            print(f"\nLlama3 8b: That's an interesting question! However, the Oracle")
+            print("is waiting for you to ask about the riddle: 'How many r's are in strawberry?'")
+            print("\n>>> /bye")
+            print("Exiting interactive session.\n")
     
     def _attempt_riddle_room4(self) -> None:
         """Handle riddle attempt in Room 4 with Llama3 8b."""
@@ -555,6 +694,46 @@ class GameEngine:
         else:
             print("\n(Rare case: Even large models can occasionally fail.)")
             print("Try 'riddle' again!")
+    
+    def _unlock_victory(self) -> None:
+        """Handle password entry to unlock the Victory Chamber."""
+        print("\n🔓 Password accepted!")
+        print("The ancient lock glows brightly and the chamber doors swing open!")
+        print("\nYou step inside the Victory Chamber...")
+        print()
+        
+        # Award points
+        self.player.add_knowledge_points(100)
+        
+        # Mark complete
+        self.player.complete_objective("room4_complete")
+        self.current_room.mark_completed()
+        
+        # Show victory screen
+        display_victory()
+        
+        print("🏆 GROUND LEVEL COMPLETE! 🏆\n")
+        print(f"Final Knowledge Points: {self.player.knowledge_points}")
+        print(f"Tips Unlocked: {len(self.player.unlocked_tips)}/4")
+        
+        self.player.display_unlocked_tips(self.tips)
+        
+        print("\n" + "="*60)
+        print("Thank you for playing AI-LLM-Dungeon: Ground Level!")
+        print("You've learned the fundamentals of Ollama and LLM management.")
+        print("="*60 + "\n")
+        
+        # Enable post-victory exploration
+        print("🌟 POST-VICTORY EXPLORATION ENABLED! 🌟")
+        print("\nYou can now freely explore the dungeon to review your learnings!")
+        print("Move between rooms using 'east' and 'west' commands.")
+        print("Visit any room to revisit what you learned:")
+        print("  • Room 0 (west): Ollama Village - Review basic commands")
+        print("  • Room 1 (west): Summoning Chamber - Model pulling")
+        print("  • Room 2 (west): Riddle Hall - Model capabilities")
+        print("  • Room 3 (west): Upgrade Forge - Model management")
+        print("  • Room 4: Victory Chamber (you are here)")
+        print("\nType 'quit' when you're ready to exit.\n")
     
     def _move_to_room(self, room_id: int) -> None:
         """
