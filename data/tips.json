@@ -16,7 +16,7 @@
     },
     {
         "id": "tip_04",
-        "text": "Summoning a sidekick requires the correct prompt (scroll).",
+        "text": "Use `ollama pull <model>` to download models and `ollama run <model>` to start chatting",
         "unlocked_by_default": false
     }
 ]

@@ -3,18 +3,21 @@
         "name": "Phi3 Mini",
         "specialty": "Quick, small context",
         "summon_scroll": "Summon Phi3 Mini to assist me!",
+        "ollama_command": "ollama pull phi3:mini",
         "memory": 2
     },
     {
         "name": "Qwen Lite",
         "specialty": "Coding, logical puzzles",
         "summon_scroll": "Summon Qwen Lite to assist me!",
+        "ollama_command": "ollama pull qwen:lite",
         "memory": 5
     },
     {
         "name": "Llama3 8b",
         "specialty": "Large context, general purpose",
         "summon_scroll": "Summon Llama3 8b to assist me!",
+        "ollama_command": "ollama pull llama3:8b",
         "memory": 20
     }
 ]

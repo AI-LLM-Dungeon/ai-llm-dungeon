@@ -21,7 +21,7 @@ class Player:
     
     def __init__(self):
         """Initialize a new Player with default values."""
-        self.current_room: int = 1  # Start in Room 1
+        self.current_room: int = 0  # Start in Room 0 (Ollama Village)
         self.active_sidekick: Optional[Sidekick] = None
         self.knowledge_points: int = 0
         self.unlocked_tips: Set[str] = set()
@@ -166,6 +166,10 @@ class Player:
         Returns:
             Tuple of (can_proceed: bool, reason: str)
         """
+        # Room 1 requires completing room 0 objectives
+        if room_id == 1 and not self.has_completed_objective("room0_complete"):
+            return False, "You must complete the Ollama Village training first!"
+        
         # Room 2 requires completing room 1 objectives
         if room_id == 2 and not self.has_completed_objective("room1_complete"):
             return False, "You must complete the Summoning Chamber first!"

@@ -21,7 +21,7 @@ class Sidekick:
         active (bool): Whether this sidekick is currently summoned
     """
     
-    def __init__(self, name: str, specialty: str, summon_scroll: str, memory: int):
+    def __init__(self, name: str, specialty: str, summon_scroll: str, memory: int, ollama_command: str = ""):
         """
         Initialize a new Sidekick.
         
@@ -30,11 +30,13 @@ class Sidekick:
             specialty: What the model is good at
             summon_scroll: The exact text needed to summon this sidekick
             memory: Memory size in GB
+            ollama_command: The actual Ollama CLI command to pull this model
         """
         self.name: str = name
         self.specialty: str = specialty
         self.summon_scroll: str = summon_scroll
         self.memory: int = memory
+        self.ollama_command: str = ollama_command
         self.active: bool = False
     
     def summon(self) -> str:
@@ -171,5 +173,6 @@ class Sidekick:
             name=data["name"],
             specialty=data["specialty"],
             summon_scroll=data["summon_scroll"],
-            memory=data["memory"]
+            memory=data["memory"],
+            ollama_command=data.get("ollama_command", "")
         )

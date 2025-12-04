@@ -42,6 +42,19 @@ LLAMA3_8B_ART = r"""
  (_|_||_|_)
 """
 
+# Shaman NPC art
+SHAMAN_ART = r"""
+      /\
+     /  \
+    / ◉◉ \
+   |  <>  |   The Ollama Shaman
+   |  ||  |   "Let me teach you
+    \ -- /     the ancient commands..."
+     |  |
+    /|  |\
+   (_|  |_)
+"""
+
 # Room transition
 ROOM_TRANSITION = r"""
     ┌─────────────────────────┐
@@ -103,3 +116,7 @@ def display_victory() -> None:
 def display_room_transition() -> None:
     """Displays a room transition animation."""
     print(ROOM_TRANSITION)
+
+def display_shaman() -> None:
+    """Displays the Shaman ASCII art."""
+    print(SHAMAN_ART)

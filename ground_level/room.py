@@ -96,6 +96,42 @@ class Room:
         return f"{status} Room {self.room_id}: {self.name}"
 
 
+class OllamaVillage(Room):
+    """
+    Room 0: Ollama Village
+    
+    The starting area where the Shaman teaches the player real Ollama commands
+    before they enter the dungeon proper.
+    """
+    
+    def __init__(self):
+        description = """
+You find yourself in a peaceful village nestled at the base of a great mountain.
+The air hums with ancient knowledge. 
+
+Before you stands a wise Shaman, keeper of the Ollama arts.
+The Shaman speaks: "Welcome, young apprentice! Before you venture into the 
+dungeon depths, you must first learn the sacred commands of Ollama."
+
+"I will teach you the six fundamental commands that every Ollama master must know.
+Listen carefully, for these commands will be your tools in the challenges ahead."
+        """
+        
+        objectives = [
+            "Learn about installing Ollama",
+            "Learn the 'ollama serve' command",
+            "Learn the 'ollama list' command",
+            "Learn the 'ollama pull' command",
+            "Learn the 'ollama run' command",
+            "Learn the 'ollama rm' command"
+        ]
+        
+        super().__init__(0, "Ollama Village", description.strip(), objectives)
+        self.available_directions = ["east"]  # Can go to Room 1 after training
+        self.lessons_completed = 0
+        self.total_lessons = 6
+
+
 class SummoningChamber(Room):
     """
     Room 1: The Summoning Chamber
@@ -106,25 +142,26 @@ class SummoningChamber(Room):
     
     def __init__(self):
         description = """
-You awaken in a mystical chamber filled with ancient scrolls.
+You enter the mystical Summoning Chamber, the first true test of your training.
 Glowing runes on the walls read:
 
-  "To master the LLMs, one must first learn to summon them."
-  "Speak the sacred scroll words precisely to call forth your companion."
+  "To master the LLMs, one must summon them with the proper incantations."
+  "Use the Ollama command you learned in the village."
 
-On a pedestal before you lies a scroll labeled "Phi3 Mini".
-The scroll reads: "Summon Phi3 Mini to assist me!"
+On a pedestal before you lies an instruction scroll for "Phi3 Mini":
+  Model: phi3:mini
+  Command: ollama pull phi3:mini
 
-To summon your first sidekick, type exactly what the scroll says.
+To summon your first sidekick, use the command shown above.
         """
         
         objectives = [
-            "Read the scroll on the pedestal",
-            "Summon Phi3 Mini using the exact scroll text"
+            "Read the instruction scroll on the pedestal",
+            "Summon Phi3 Mini using: ollama pull phi3:mini"
         ]
         
         super().__init__(1, "The Summoning Chamber", description.strip(), objectives)
-        self.available_directions = ["east"]  # Can go to Room 2
+        self.available_directions = ["west", "east"]  # Can go back to village or forward
 
 
 class RiddleHall(Room):
@@ -174,17 +211,17 @@ A wise forge master appears and speaks:
 The forge can reshape your tools. You must first release Phi3 Mini
 to make room for a more powerful ally."
 
-On the wall, you see instructions carved in stone:
-  1. Remove your current sidekick to free memory
-  2. Summon a more powerful model (Llama3 8b)
+On the wall, you see Ollama commands carved in stone:
+  1. Remove your current model: ollama rm phi3:mini
+  2. Pull a more powerful model: ollama pull llama3:8b
   3. Return to retry the riddle with greater strength
 
 The forge master awaits your command.
         """
         
         objectives = [
-            "Remove Phi3 Mini to free memory",
-            "Pull and summon Llama3 8b",
+            "Remove Phi3 Mini: ollama rm phi3:mini",
+            "Pull and summon Llama3 8b: ollama pull llama3:8b",
             "Prepare to retry the riddle"
         ]
         
@@ -236,6 +273,7 @@ def create_room(room_id: int) -> Room:
         ValueError: If room_id is invalid
     """
     rooms = {
+        0: OllamaVillage,
         1: SummoningChamber,
         2: RiddleHall,
         3: UpgradeForge,
