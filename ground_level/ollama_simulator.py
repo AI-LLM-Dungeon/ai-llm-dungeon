@@ -21,6 +21,10 @@ class OllamaSimulator:
     def __init__(self):
         """Initialize the Ollama simulator."""
         self.installed_models: Set[str] = set()
+        self.model_metadata = {
+            "phi3-mini": {"id": "a2b3c4d5e6f7", "size": "2.3 GB", "size_bytes": 2300},
+            "llama3-8b": {"id": "b3c4d5e6f7a8", "size": "4.7 GB", "size_bytes": 4700}
+        }
     
     def pull_model(self, model_name: str) -> bool:
         """
@@ -37,8 +41,11 @@ class OllamaSimulator:
         print(f"\n🔄 Simulating: ollama pull {model_name}")
         print(f"Pulling {model_name}...\n")
         
+        # Get model size for realistic simulation
+        size_bytes = self.model_metadata.get(model_name, {}).get("size_bytes", 1500)
+        
         # Simulate download progress
-        self._show_progress_bar(model_name, duration=2.0)
+        self._show_progress_bar(model_name, duration=2.0, total_size=size_bytes)
         
         # Add to installed models
         self.installed_models.add(model_name)
@@ -71,11 +78,37 @@ class OllamaSimulator:
     
     def list_models(self) -> list[str]:
         """
-        List all currently installed models.
+        List all currently installed models with formatted table output.
         
         Returns:
             List of installed model names
         """
+        if not self.installed_models:
+            print("\nNo models installed yet.")
+            return []
+        
+        print("\n📋 Simulating: ollama list")
+        print("\nNAME            ID              SIZE      MODIFIED")
+        
+        import datetime
+        for i, model_name in enumerate(sorted(self.installed_models)):
+            metadata = self.model_metadata.get(model_name, {
+                "id": "abc123def456",
+                "size": "1.5 GB"
+            })
+            
+            # Simulate different modification times
+            minutes_ago = (i + 1) * 2
+            modified = f"{minutes_ago} minutes ago" if minutes_ago < 60 else f"{minutes_ago // 60} hours ago"
+            
+            # Format the output to align properly
+            name_col = model_name.ljust(16)
+            id_col = metadata["id"].ljust(16)
+            size_col = metadata["size"].ljust(10)
+            
+            print(f"{name_col}{id_col}{size_col}{modified}")
+        
+        print()
         return list(self.installed_models)
     
     def is_model_available(self, model_name: str) -> bool:
@@ -90,13 +123,26 @@ class OllamaSimulator:
         """
         return model_name in self.installed_models
     
-    def _show_progress_bar(self, model_name: str, duration: float = 2.0) -> None:
+    def serve(self) -> None:
+        """
+        Simulate starting the Ollama daemon/service.
+        
+        Displays realistic output about the Ollama server starting.
+        """
+        print("\n🔄 Simulating: ollama serve")
+        print("\nStarting Ollama server...")
+        time.sleep(0.5)
+        print("Ollama is running on http://localhost:11434")
+        print("✅ Server is ready to accept requests\n")
+    
+    def _show_progress_bar(self, model_name: str, duration: float = 2.0, total_size: int = 1500) -> None:
         """
         Display a simulated progress bar for model download.
         
         Args:
             model_name: Name of the model being downloaded
             duration: Total duration of the progress bar in seconds
+            total_size: Total size in MB
         """
         total_steps = 20
         sleep_time = duration / total_steps
@@ -106,10 +152,10 @@ class OllamaSimulator:
             filled = int(i)
             bar = "█" * filled + "░" * (total_steps - filled)
             
-            # Simulate download size (varies by model)
-            size_mb = int((i / total_steps) * 1500)  # Up to 1.5 GB
+            # Simulate download size based on total_size
+            size_mb = int((i / total_steps) * total_size)
             
-            sys.stdout.write(f"\r[{bar}] {percent:5.1f}% ({size_mb} MB / 1500 MB)")
+            sys.stdout.write(f"\r[{bar}] {percent:5.1f}% ({size_mb} MB / {total_size} MB)")
             sys.stdout.flush()
             
             if i < total_steps:
