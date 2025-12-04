@@ -8,7 +8,7 @@ from .sidekick import Sidekick
 from .puzzle import Puzzle
 from .room import Room, create_room
 from .ollama_simulator import OllamaSimulator
-from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print
+from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print, display_certificate, display_descend
 
 
 class GameEngine:
@@ -507,6 +507,11 @@ class GameEngine:
             else:
                 self._move_to_room(4)
         
+        elif command == "ollama list":
+            print()
+            self.ollama.list_models()
+            print()
+        
         elif command in ["ollama rm phi3:mini", "remove", "remove phi3", "remove phi3 mini"]:
             self._remove_phi3_mini()
         
@@ -533,9 +538,19 @@ class GameEngine:
         elif command == "ollama apprentice":
             self._unlock_victory()
         
+        elif command == "descend":
+            if self.player.has_completed_objective("room4_complete"):
+                self._handle_descend()
+            else:
+                print("\n⚠️  You must unlock the Victory Chamber first!")
+                print("Hint: Enter the password revealed by Llama3 8b!")
+        
         else:
             print(f"\nUnknown command. Type 'help' for available commands.")
-            print("Hint: Enter the password revealed by Llama3 8b!")
+            if not self.player.has_completed_objective("room4_complete"):
+                print("Hint: Enter the password revealed by Llama3 8b!")
+            else:
+                print("Hint: Type 'descend' to proceed to the Tokenizer Tomb!")
     
     def _attempt_riddle_room2(self) -> None:
         """Handle riddle attempt in Room 2 with Phi3 Mini."""
@@ -711,6 +726,9 @@ class GameEngine:
             
             if success:
                 print("The Oracle's eyes glow with approval!")
+                print("\n✨ The treasure chest begins to glow with golden light! ✨")
+                print("Ancient locks click open one by one...")
+                print("The chest lid slowly rises, revealing a scroll inside.")
                 print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
                 print("The Oracle reveals: 'The password to unlock it is: Ollama Apprentice'")
                 print("\n>>> /bye")
@@ -724,6 +742,10 @@ class GameEngine:
                 
                 print("🔑 Password discovered! You can now proceed to the Victory Chamber.")
                 print("Head EAST through the Forge to reach the Victory Chamber!")
+            else:
+                print("\n>>> /bye")
+                print("Exiting interactive session.\n")
+                print("(Rare case: Even large models can occasionally fail. Try again!)")
             else:
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
@@ -816,27 +838,63 @@ class GameEngine:
         display_victory()
         
         print("🏆 GROUND LEVEL COMPLETE! 🏆\n")
+        print("You have earned the title: \"Ollama Apprentice\"\n")
+        
+        # Display certificate
+        display_certificate()
+        
+        # Show the path forward
+        print("\n🚪 THE PATH FORWARD 🚪\n")
+        print("Your training is complete, but your adventure has just begun!")
+        print("The dungeon descends deeper with greater challenges awaiting...\n")
+        
+        print("  ⬇️  NEXT: The Tokenizer Tomb (Entrance Level)")
+        print("      Learn how LLMs see the world through tokens.")
+        print("      Run: python3 entrance/tokenizer_fight.py \"your text\"\n")
+        
+        print("  🔮 COMING SOON:")
+        print("      • Temperature Tavern - Master sampling parameters")
+        print("      • Context Catacombs - Understand context windows")
+        print("      • Prompt Palace - Advanced prompt engineering\n")
+        
+        # Real-world next steps
+        print("💡 REAL-WORLD NEXT STEPS:")
+        print("   1. Install Ollama for real: curl -fsSL https://ollama.ai/install.sh | sh")
+        print("   2. Pull your first model: ollama pull llama3")
+        print("   3. Start chatting: ollama run llama3\n")
+        
+        # Show stats
         print(f"Final Knowledge Points: {self.player.knowledge_points}")
-        print(f"Tips Unlocked: {len(self.player.unlocked_tips)}/4")
+        print(f"Tips Unlocked: {len(self.player.unlocked_tips)}/4\n")
         
         self.player.display_unlocked_tips(self.tips)
         
+        # Enable exploration and descend option
         print("\n" + "="*60)
-        print("Thank you for playing AI-LLM-Dungeon: Ground Level!")
-        print("You've learned the fundamentals of Ollama and LLM management.")
+        print("Type 'descend' to proceed to the Tokenizer Tomb, or 'quit' to exit.")
+        print("You can also explore the dungeon by moving 'west' to revisit rooms.")
         print("="*60 + "\n")
+    
+    def _handle_descend(self) -> None:
+        """Handle the descend command to transition to the Tokenizer Tomb."""
+        print()
+        display_descend()
+        print()
         
-        # Enable post-victory exploration
-        print("🌟 POST-VICTORY EXPLORATION ENABLED! 🌟")
-        print("\nYou can now freely explore the dungeon to review your learnings!")
-        print("Move between rooms using 'east' and 'west' commands.")
-        print("Visit any room to revisit what you learned:")
-        print("  • Room 0 (west): Ollama Village - Review basic commands")
-        print("  • Room 1 (west): Summoning Chamber - Model pulling")
-        print("  • Room 2 (west): Riddle Hall - Model capabilities")
-        print("  • Room 3 (west): Upgrade Forge - Model management")
-        print("  • Room 4: Victory Chamber (you are here)")
-        print("\nType 'quit' when you're ready to exit.\n")
+        slow_print("You approach the ancient stone staircase at the back of the Victory Chamber.")
+        slow_print("The air grows cooler as you peer into the darkness below...")
+        slow_print("Carved into the archway above the stairs, you read:")
+        slow_print("  'The Tokenizer Tomb - Where words become numbers'\n")
+        
+        slow_print("You've mastered the fundamentals of Ollama.")
+        slow_print("Now it's time to learn how LLMs truly see the world.\n")
+        
+        print("="*60)
+        print("To continue your journey, run:")
+        print("  python3 entrance/tokenizer_fight.py \"your text\"")
+        print()
+        print("Or explore the dungeon further with 'west', or 'quit' to exit.")
+        print("="*60 + "\n")
     
     def _move_to_room(self, room_id: int) -> None:
         """

@@ -16,6 +16,28 @@ GROUND_LEVEL_BANNER = r"""
 ╚════════════════════════════════════════════════════════════╝
 """
 
+# Certificate of Ollama Mastery
+CERTIFICATE_ART = r"""
+╔══════════════════════════════════════════════════════════════╗
+║              CERTIFICATE OF OLLAMA MASTERY                   ║
+║                                                              ║
+║  You have mastered the six sacred commands:                  ║
+║    • ollama serve    • ollama list    • ollama pull          ║
+║    • ollama run      • ollama rm      • ollama show          ║
+║                                                              ║
+║  You understand that larger models = more capable but        ║
+║  require more resources. Choose wisely, young summoner.      ║
+╚══════════════════════════════════════════════════════════════╝
+"""
+
+# Descend/transition art
+DESCEND_ART = r"""
+     ⬇️  ⬇️  ⬇️  ⬇️  ⬇️
+    The stairs descend into
+       deeper darkness...
+     ⬇️  ⬇️  ⬇️  ⬇️  ⬇️
+"""
+
 # Sidekick ASCII Art
 PHI3_MINI_ART = r"""
     /\_/\  
@@ -114,6 +136,14 @@ def display_banner() -> None:
 def display_victory() -> None:
     """Displays the victory screen."""
     print(VICTORY_SCREEN)
+
+def display_certificate() -> None:
+    """Displays the Certificate of Ollama Mastery."""
+    print(CERTIFICATE_ART)
+
+def display_descend() -> None:
+    """Displays the descend/transition art."""
+    print(DESCEND_ART)
 
 def display_room_transition() -> None:
     """Displays a room transition animation."""

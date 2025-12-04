@@ -177,10 +177,13 @@ class RiddleHall(Room):
     def __init__(self):
         description = """
 You enter a grand hall with crystalline walls that shimmer with data streams.
-At the center stands a mysterious Oracle of Puzzles.
+At the center stands a mysterious Oracle of Puzzles, and behind her, you notice
+a magnificent treasure chest sealed with ancient locks.
 
 The Oracle speaks: "Many adventurers have attempted my riddles.
-Some succeed, some fail. Your companion's strength will be tested here."
+Some succeed, some fail. Your companion's strength will be tested here.
+Answer correctly, and the treasure chest shall open, revealing the password
+to the Victory Chamber."
 
 A riddle materializes in glowing text before you:
   "How many 'r's are in 'strawberry'?"
@@ -190,7 +193,8 @@ To consult your sidekick, use: ollama run phi3:mini
         
         objectives = [
             "Use 'ollama run phi3:mini' to consult your sidekick",
-            "Ask about the strawberry riddle"
+            "Ask about the strawberry riddle",
+            "Use a stronger, more capable model to complete the riddle"
         ]
         
         super().__init__(2, "The Riddle Hall", description.strip(), objectives)
@@ -236,6 +240,7 @@ class VictoryChamber(Room):
     Room 4: The Victory Chamber
     
     The final chamber that requires the password to enter and complete.
+    Serves as a transition point to deeper dungeon levels.
     """
     
     def __init__(self):
@@ -246,12 +251,16 @@ with glowing runes that read:
 "Only those who have proven their worth with the power of Llama3
 may enter this sacred hall. Speak the password to unlock the chamber."
 
+Beyond this chamber lies the path to deeper levels of the dungeon,
+where greater challenges and knowledge await.
+
 You must enter the password revealed to you by Llama3 8b.
         """
         
         objectives = [
             "Enter the password to unlock the Victory Chamber",
-            "Achieve victory and complete the Ground Level"
+            "Complete the Ground Level and receive your certificate",
+            "Choose to descend deeper or explore the dungeon"
         ]
         
         super().__init__(4, "The Victory Chamber", description.strip(), objectives)
