@@ -38,6 +38,9 @@ class VerificationHelper:
         
         # Look for the model name at the start of a line or after whitespace
         # Handle both 'model' and 'model:tag' formats
+        # Pattern explanation: (?:^|\s) = start of line or whitespace
+        #                      model_name = the escaped model name to search for
+        #                      (?::|\s|$) = followed by colon, whitespace, or end of line
         pattern = rf'(?:^|\s){re.escape(model_name)}(?::|\s|$)'
         return bool(re.search(pattern, list_output, re.MULTILINE | re.IGNORECASE))
     
@@ -83,6 +86,9 @@ class VerificationHelper:
         
         # Look for parameter name followed by value
         # Handle various formats: "param value", "param: value", "param=value"
+        # Pattern explanation: param_name = the escaped parameter name
+        #                      \s*[:\s=]+\s* = optional whitespace, separators (: or = or space), optional whitespace
+        #                      ([^\s\n]+) = capture group for the value (non-whitespace characters)
         pattern = rf'{re.escape(param_name)}\s*[:\s=]+\s*([^\s\n]+)'
         match = re.search(pattern, show_output, re.IGNORECASE)
         
