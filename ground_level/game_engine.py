@@ -746,10 +746,6 @@ class GameEngine:
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
                 print("(Rare case: Even large models can occasionally fail. Try again!)")
-            else:
-                print("\n>>> /bye")
-                print("Exiting interactive session.\n")
-                print("(Rare case: Even large models can occasionally fail. Try again!)")
         else:
             print(f"\nLlama3 8b: That's an interesting question! However, the Oracle")
             print("is waiting for you to ask about the riddle: 'How many r's are in strawberry?'")
