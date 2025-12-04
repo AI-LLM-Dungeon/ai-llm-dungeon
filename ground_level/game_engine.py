@@ -8,7 +8,7 @@ from .sidekick import Sidekick
 from .puzzle import Puzzle
 from .room import Room, create_room
 from .ollama_simulator import OllamaSimulator
-from .ascii_art import display_banner, display_victory, display_room_transition
+from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print
 
 
 class GameEngine:
@@ -145,7 +145,6 @@ class GameEngine:
     
     def _handle_room0_commands(self, command: str) -> None:
         """Handle commands specific to Room 0 (Ollama Village)."""
-        from .ascii_art import display_shaman, slow_print
         
         # Room 0: User types 'learn' to begin (only time 'learn' is used)
         if command in ["learn", "teach", "lesson", "next"]:
@@ -243,7 +242,6 @@ class GameEngine:
     
     def _teach_install(self) -> None:
         """Teach the player about installing Ollama."""
-        from .ascii_art import slow_print
         
         slow_print("\n=== LESSON 1: Installing Ollama ===\n", 0.5)
         slow_print("The Shaman speaks:")
@@ -263,7 +261,6 @@ class GameEngine:
     
     def _complete_lesson1(self) -> None:
         """Complete lesson 1 by typing 'ollama'."""
-        from .ascii_art import slow_print
         
         print("\n✅ Correct! The `ollama` command is your gateway to LLM management.")
         print()
@@ -280,7 +277,6 @@ class GameEngine:
     
     def _complete_lesson2(self) -> None:
         """Complete lesson 2 by typing 'ollama serve'."""
-        from .ascii_art import slow_print
         
         print()
         self.ollama.serve()
@@ -298,7 +294,6 @@ class GameEngine:
     
     def _complete_lesson3(self) -> None:
         """Complete lesson 3 by typing 'ollama list'."""
-        from .ascii_art import slow_print
         
         print()
         self.ollama.list_models()
@@ -321,7 +316,6 @@ class GameEngine:
     
     def _complete_lesson4(self) -> None:
         """Complete lesson 4 by typing 'ollama pull phi3:mini'."""
-        from .ascii_art import slow_print
         
         print()
         self.ollama.pull_model("phi3-mini")
@@ -346,7 +340,6 @@ class GameEngine:
     
     def _complete_lesson5(self) -> None:
         """Complete lesson 5 by typing 'ollama run phi3:mini'."""
-        from .ascii_art import slow_print
         
         print()
         slow_print("🤖 Simulating: ollama run phi3:mini\n", 0.5)
@@ -367,7 +360,6 @@ class GameEngine:
     
     def _complete_lesson6(self) -> None:
         """Complete lesson 6 by typing 'ollama rm phi3:mini'."""
-        from .ascii_art import slow_print
         
         print()
         self.ollama.remove_model("phi3-mini")
@@ -388,7 +380,6 @@ class GameEngine:
     
     def _handle_room1_commands(self, command: str) -> None:
         """Handle commands specific to Room 1 (Summoning Chamber)."""
-        from .ascii_art import slow_print
         
         # Check for real Ollama command
         phi3 = self.sidekicks["Phi3 Mini"]
