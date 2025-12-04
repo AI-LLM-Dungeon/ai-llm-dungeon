@@ -1,0 +1,439 @@
+{
+  "quest_id": "ground_level_ollama",
+  "title": "Ground Level: Ollama Mastery",
+  "description": "Learn real Ollama commands through an interactive dungeon adventure",
+  "version": "1.0",
+  "default_model": "llama3",
+  "acts": [
+    {
+      "act_number": 1,
+      "title": "Summoner's Vestibule",
+      "scene_id": "summoners_vestibule",
+      "objective": "Learn to pull (download) a model and verify installation",
+      "narrative": {
+        "intro": "A circular chamber with walls covered in glowing runes. In the center stands an ornate summoning circle, empty and waiting. Ancient scrolls line the walls, their pages shimmering with barely contained power.",
+        "guide_name": "Ethereal Guide",
+        "challenge": "You must summon your first AI companion from the digital void."
+      },
+      "teaching": {
+        "concept": "Model Installation",
+        "commands": [
+          {
+            "name": "ollama pull",
+            "syntax": "ollama pull <model>",
+            "example": "ollama pull llama3",
+            "description": "Downloads a model from the Ollama repository",
+            "notes": [
+              "Models are typically several GB in size",
+              "Download time depends on internet speed",
+              "Models are cached locally after first pull"
+            ]
+          },
+          {
+            "name": "ollama list",
+            "syntax": "ollama list",
+            "example": "ollama list",
+            "description": "Lists all installed models",
+            "notes": [
+              "Shows model names, IDs, sizes, and modification dates",
+              "Use to verify successful installation",
+              "Essential for tracking what's available locally"
+            ]
+          }
+        ]
+      },
+      "verification": {
+        "type": "model_present",
+        "model_name": "llama3",
+        "steps": [
+          {
+            "step": 1,
+            "command": "ollama pull llama3",
+            "expected": "Download completes successfully",
+            "timeout": 300
+          },
+          {
+            "step": 2,
+            "command": "ollama list",
+            "expected": "llama3 appears in output",
+            "timeout": 30,
+            "validation": "regex",
+            "pattern": "llama3.*"
+          }
+        ],
+        "success_message": "Excellent! Your companion Llama3 has been successfully summoned. The summoning circle glows with newfound energy.",
+        "failure_hints": [
+          "Ensure you spelled 'ollama pull llama3' correctly",
+          "Wait for the download to complete fully (check progress bar)",
+          "Verify with 'ollama list' that the model appears",
+          "Check you have sufficient disk space (typically 4-8 GB needed)"
+        ]
+      },
+      "rewards": {
+        "knowledge_points": 10,
+        "unlocked_tips": ["tip_model_sizes", "tip_pull_tags"]
+      }
+    },
+    {
+      "act_number": 2,
+      "title": "Hall of Mirrors",
+      "scene_id": "hall_of_mirrors",
+      "objective": "Learn to list models and identify their attributes",
+      "narrative": {
+        "intro": "Countless mirrors line the walls, each reflecting a different aspect of reality. In each reflection, you see shadowy figures - your potential companions, both present and absent.",
+        "guide_name": "Mirror Keeper",
+        "challenge": "You must learn to read the mirrors and understand what your companions truly are."
+      },
+      "teaching": {
+        "concept": "Model Inspection",
+        "commands": [
+          {
+            "name": "ollama list",
+            "syntax": "ollama list",
+            "example": "ollama list",
+            "description": "Detailed view of all installed models",
+            "notes": [
+              "NAME column shows model name and tag",
+              "ID column shows unique model identifier",
+              "SIZE column shows disk space used",
+              "MODIFIED column shows last update time"
+            ]
+          }
+        ],
+        "output_format": {
+          "columns": ["NAME", "ID", "SIZE", "MODIFIED"],
+          "example": "llama3:latest    abc123...    4.7 GB    2 days ago"
+        }
+      },
+      "verification": {
+        "type": "attribute_identification",
+        "model_name": "llama3",
+        "steps": [
+          {
+            "step": 1,
+            "command": "ollama list",
+            "expected": "Model list displayed with attributes",
+            "timeout": 30
+          }
+        ],
+        "questions": [
+          {
+            "question": "What size does your llama3 model occupy?",
+            "validation": "regex",
+            "pattern": "\\d+\\.?\\d*\\s*(GB|MB)",
+            "hint": "Look at the SIZE column in the output"
+          }
+        ],
+        "success_message": "You have read the mirrors well! Understanding your companions' properties is essential for mastery.",
+        "failure_hints": [
+          "Run 'ollama list' and look at the SIZE column",
+          "The size is typically shown in GB (gigabytes)",
+          "It should be a number followed by GB, like '4.7 GB'"
+        ]
+      },
+      "rewards": {
+        "knowledge_points": 10,
+        "unlocked_tips": ["tip_model_tags", "tip_storage_management"]
+      }
+    },
+    {
+      "act_number": 3,
+      "title": "Oracle's Bench",
+      "scene_id": "oracles_bench",
+      "objective": "Learn to run models with prompts",
+      "narrative": {
+        "intro": "An ancient stone bench sits before a pool of still water. The air crackles with potential energy. This is where companions demonstrate their wisdom, answering questions posed by their summoners.",
+        "guide_name": "The Oracle",
+        "challenge": "You must learn the Art of Inquiry - how to make your companion speak and respond to your questions."
+      },
+      "teaching": {
+        "concept": "Model Execution",
+        "commands": [
+          {
+            "name": "ollama run",
+            "syntax": "ollama run <model> \"<prompt>\"",
+            "example": "ollama run llama3 \"What is AI?\"",
+            "description": "Runs a model with a prompt and returns the response",
+            "notes": [
+              "Enclose multi-word prompts in quotes",
+              "Model must be pulled first",
+              "Response time varies by prompt complexity and model size",
+              "Can run interactively without a prompt for conversation mode"
+            ]
+          }
+        ],
+        "advanced": {
+          "interactive_mode": "ollama run llama3",
+          "description": "Run without prompt for interactive chat session",
+          "exit": "Press Ctrl+D or type /bye to exit"
+        }
+      },
+      "verification": {
+        "type": "command_execution",
+        "model_name": "llama3",
+        "steps": [
+          {
+            "step": 1,
+            "command": "ollama run llama3 \"I speak without a mouth and hear without ears. I have no body, but I come alive with code. What am I?\"",
+            "expected": "Model generates a response",
+            "timeout": 60,
+            "validation": "response_received"
+          }
+        ],
+        "riddle": {
+          "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with code. What am I?",
+          "expected_keywords": ["AI", "artificial intelligence", "program", "software", "computer"],
+          "validation_mode": "contains_any"
+        },
+        "success_message": "Excellent! Your companion has pondered the riddle and offered wisdom. You have mastered the Running Ritual.",
+        "failure_hints": [
+          "Make sure your model is running: 'ollama run llama3 \"prompt\"'",
+          "Enclose your prompt in double quotes",
+          "Wait for the model to finish generating its response",
+          "The model should respond with something about AI or programs"
+        ]
+      },
+      "rewards": {
+        "knowledge_points": 15,
+        "unlocked_tips": ["tip_prompt_engineering", "tip_interactive_mode", "tip_stopping_generation"]
+      }
+    },
+    {
+      "act_number": 4,
+      "title": "Archivist's Sanctum",
+      "scene_id": "archivists_sanctum",
+      "objective": "Learn to inspect model details and parameters",
+      "narrative": {
+        "intro": "Towering bookshelves reach toward a vaulted ceiling. Each tome contains the essence of a companion - their rules, parameters, and very nature written in arcane symbols.",
+        "guide_name": "Head Archivist",
+        "challenge": "You must learn to read the tome of your companion - understanding its configuration and parameters."
+      },
+      "teaching": {
+        "concept": "Model Introspection",
+        "commands": [
+          {
+            "name": "ollama show",
+            "syntax": "ollama show <model>",
+            "example": "ollama show llama3",
+            "description": "Displays detailed information about a model",
+            "notes": [
+              "Shows the Modelfile used to create the model",
+              "Displays parameters like temperature, context window",
+              "Reveals system prompts and templates",
+              "Useful for understanding model behavior and creating custom models"
+            ]
+          }
+        ],
+        "key_parameters": [
+          {
+            "name": "num_ctx",
+            "description": "Context window size (how many tokens the model can remember)",
+            "typical_values": "2048, 4096, 8192, 32768"
+          },
+          {
+            "name": "temperature",
+            "description": "Controls randomness (0 = deterministic, higher = more creative)",
+            "typical_values": "0.0 to 1.0"
+          },
+          {
+            "name": "top_p",
+            "description": "Nucleus sampling threshold",
+            "typical_values": "0.9, 0.95"
+          },
+          {
+            "name": "top_k",
+            "description": "Limits vocabulary sampling",
+            "typical_values": "40, 50"
+          }
+        ]
+      },
+      "verification": {
+        "type": "parameter_extraction",
+        "model_name": "llama3",
+        "steps": [
+          {
+            "step": 1,
+            "command": "ollama show llama3",
+            "expected": "Model details displayed",
+            "timeout": 30
+          }
+        ],
+        "extraction_task": {
+          "parameter": "num_ctx",
+          "instruction": "Find the 'num_ctx' parameter value in the output",
+          "validation": "regex",
+          "pattern": "num_ctx\\s+(\\d+)",
+          "hint": "Look for a line containing 'num_ctx' followed by a number"
+        },
+        "success_message": "Excellent work! Understanding parameters allows you to fine-tune companions and create custom variations.",
+        "failure_hints": [
+          "Run 'ollama show llama3' to see model details",
+          "Look for a line that says 'num_ctx' followed by a number",
+          "The number represents the context window size in tokens",
+          "Common values are 2048, 4096, or 8192"
+        ]
+      },
+      "rewards": {
+        "knowledge_points": 15,
+        "unlocked_tips": ["tip_modelfile_format", "tip_custom_models", "tip_parameter_tuning"]
+      }
+    },
+    {
+      "act_number": 5,
+      "title": "Purge Chamber",
+      "scene_id": "purge_chamber",
+      "objective": "Learn to remove models and manage resources",
+      "narrative": {
+        "intro": "A stark, cold room with walls of polished obsidian. In the center lies the Unbinding Circle - where companions are released back to the void. The air feels heavy with the weight of necessary endings.",
+        "guide_name": "Chamber Guardian",
+        "challenge": "You must learn the difficult but necessary art of releasing companions to free resources."
+      },
+      "teaching": {
+        "concept": "Resource Management",
+        "commands": [
+          {
+            "name": "ollama rm",
+            "syntax": "ollama rm <model>",
+            "example": "ollama rm llama3",
+            "description": "Removes a model from the system",
+            "notes": [
+              "Permanently deletes the model from local storage",
+              "Frees up disk space (typically several GB)",
+              "Cannot be undone without re-pulling the model",
+              "Use 'ollama list' after removal to verify"
+            ]
+          }
+        ],
+        "philosophy": [
+          "Models can be large (4GB to 40GB+)",
+          "Finite disk space requires thoughtful management",
+          "Pull models when needed, remove when done",
+          "Models can always be re-pulled from the repository",
+          "Balance between convenience and resource usage"
+        ]
+      },
+      "verification": {
+        "type": "model_absent",
+        "model_name": "llama3",
+        "steps": [
+          {
+            "step": 1,
+            "command": "ollama rm llama3",
+            "expected": "Model removed successfully",
+            "timeout": 30
+          },
+          {
+            "step": 2,
+            "command": "ollama list",
+            "expected": "llama3 no longer appears in output",
+            "timeout": 30,
+            "validation": "not_contains",
+            "pattern": "llama3"
+          }
+        ],
+        "success_message": "The ritual is complete. Your companion has been released cleanly, and your realm's resources are freed. You have mastered all five fundamental incantations!",
+        "failure_hints": [
+          "Run 'ollama rm llama3' to remove the model",
+          "After removal, verify with 'ollama list'",
+          "The model should no longer appear in the list",
+          "If removal fails, check if the model name is correct"
+        ]
+      },
+      "rewards": {
+        "knowledge_points": 10,
+        "unlocked_tips": ["tip_storage_cleanup", "tip_model_lifecycle"],
+        "completion": true
+      }
+    }
+  ],
+  "tips": {
+    "tip_model_sizes": {
+      "title": "Understanding Model Sizes",
+      "content": "Models come in various sizes (7B, 13B, 70B parameters). Larger models are generally more capable but require more memory and processing power. Choose based on your system resources and needs."
+    },
+    "tip_pull_tags": {
+      "title": "Model Tags and Versions",
+      "content": "Models can have tags like 'llama3:8b' or 'llama3:70b'. If no tag is specified, ':latest' is assumed. Use tags to pull specific versions or sizes."
+    },
+    "tip_model_tags": {
+      "title": "Reading Model Names",
+      "content": "Model names follow the format 'name:tag'. The tag often indicates model size (8b, 13b, 70b) or variant (instruct, chat, code). Understanding tags helps you choose the right model."
+    },
+    "tip_storage_management": {
+      "title": "Managing Disk Space",
+      "content": "Models can consume significant disk space. Use 'ollama list' to see sizes, and 'ollama rm' to remove unused models. Most models range from 2GB to 40GB+."
+    },
+    "tip_prompt_engineering": {
+      "title": "Crafting Effective Prompts",
+      "content": "Clear, specific prompts yield better results. Include context, specify the format you want, and break complex tasks into smaller steps."
+    },
+    "tip_interactive_mode": {
+      "title": "Interactive Chat Mode",
+      "content": "Run 'ollama run <model>' without a prompt to enter interactive mode. This allows multi-turn conversations. Exit with Ctrl+D or /bye."
+    },
+    "tip_stopping_generation": {
+      "title": "Stopping Model Output",
+      "content": "If a model generates too much or incorrect output, press Ctrl+C to stop generation. You can then try a different prompt."
+    },
+    "tip_modelfile_format": {
+      "title": "Understanding Modelfiles",
+      "content": "Modelfiles define model behavior through parameters, system prompts, and templates. They're the blueprint for creating custom models with 'ollama create'."
+    },
+    "tip_custom_models": {
+      "title": "Creating Custom Models",
+      "content": "Use 'ollama create mymodel -f Modelfile' to create custom models. Customize system prompts, parameters, and behavior to suit specific tasks."
+    },
+    "tip_parameter_tuning": {
+      "title": "Tuning Model Parameters",
+      "content": "Key parameters: temperature (creativity), top_p (diversity), num_ctx (memory). Adjust these in Modelfiles to control model behavior."
+    },
+    "tip_storage_cleanup": {
+      "title": "Regular Cleanup Practices",
+      "content": "Periodically review installed models with 'ollama list'. Remove unused models to free space. Models can always be re-pulled when needed."
+    },
+    "tip_model_lifecycle": {
+      "title": "The Model Lifecycle",
+      "content": "Pull → Use → Remove → Re-pull as needed. This cycle balances functionality with resource efficiency. Don't hoard models you're not actively using."
+    }
+  },
+  "completion_rewards": {
+    "title": "Ollama Mastery Certificate",
+    "message": "Congratulations! You have completed the Ground Level and mastered the five fundamental Ollama commands. You are now prepared to summon, manage, and utilize AI companions in the real world.",
+    "commands_mastered": [
+      "ollama pull - Summon new companions",
+      "ollama list - Survey all companions",
+      "ollama run - Commune with companions",
+      "ollama show - Understand companion nature",
+      "ollama rm - Release companions responsibly"
+    ],
+    "next_steps": [
+      "Experiment with different models: mistral, codellama, phi3",
+      "Learn about model variants and tags",
+      "Explore interactive conversation mode",
+      "Create custom models with Modelfiles",
+      "Integrate Ollama into your applications via API"
+    ]
+  },
+  "configuration": {
+    "default_verification_mode": "shell",
+    "allow_mode_switching": true,
+    "default_timeout": 60,
+    "alternative_models": [
+      {
+        "name": "mistral",
+        "description": "Swift and efficient, specializing in practical tasks",
+        "size": "7b"
+      },
+      {
+        "name": "qwen",
+        "description": "Strong in reasoning and coding tasks",
+        "size": "7b"
+      },
+      {
+        "name": "phi3",
+        "description": "Compact yet capable, perfect for limited resources",
+        "size": "3.8b"
+      }
+    ]
+  }
+}
