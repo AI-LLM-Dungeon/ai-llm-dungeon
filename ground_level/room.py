@@ -1,0 +1,248 @@
+"""Room class for the Ground Level of AI-LLM-Dungeon."""
+
+from typing import Optional, Callable, List
+from .sidekick import Sidekick
+from .puzzle import Puzzle
+from .player import Player
+
+
+class Room:
+    """
+    Represents a room in the Ground Level dungeon.
+    
+    Each room has a description, optional sidekick, optional puzzle, and
+    specific objectives that must be completed before the player can proceed.
+    
+    Attributes:
+        room_id (int): Unique identifier for the room
+        name (str): Name of the room
+        description (str): Detailed description of the room
+        objectives (List[str]): List of objectives to complete in this room
+        completed (bool): Whether all objectives are completed
+        available_directions (List[str]): Directions the player can move
+    """
+    
+    def __init__(
+        self,
+        room_id: int,
+        name: str,
+        description: str,
+        objectives: Optional[List[str]] = None
+    ):
+        """
+        Initialize a new Room.
+        
+        Args:
+            room_id: Unique identifier for the room
+            name: Name of the room
+            description: Detailed description of the room
+            objectives: List of objectives to complete (optional)
+        """
+        self.room_id: int = room_id
+        self.name: str = name
+        self.description: str = description
+        self.objectives: List[str] = objectives or []
+        self.completed: bool = False
+        self.available_directions: List[str] = []
+        self.first_visit: bool = True
+    
+    def enter(self, player: Player) -> None:
+        """
+        Called when the player enters this room.
+        
+        Displays the room description and available actions.
+        
+        Args:
+            player: The player entering the room
+        """
+        print(f"\n{'='*60}")
+        print(f"  {self.name} (Room {self.room_id})")
+        print(f"{'='*60}\n")
+        
+        if self.first_visit:
+            print(self.description)
+            self.first_visit = False
+        else:
+            print("You've returned to this room.")
+        
+        print()
+        self._show_objectives()
+        print()
+    
+    def _show_objectives(self) -> None:
+        """Display the current objectives for this room."""
+        if not self.objectives:
+            return
+        
+        print("📋 OBJECTIVES:")
+        for i, objective in enumerate(self.objectives, 1):
+            print(f"  {i}. {objective}")
+    
+    def mark_completed(self) -> None:
+        """Mark this room as completed."""
+        self.completed = True
+    
+    def show_available_actions(self) -> None:
+        """Display available actions in this room."""
+        print("\n⚔️  AVAILABLE ACTIONS:")
+        print("  'status'  - View your current status")
+        print("  'tips'    - View unlocked knowledge tips")
+        print("  'help'    - Show available commands")
+        print("  'quit'    - Exit the game")
+    
+    def __str__(self) -> str:
+        """String representation of the room."""
+        status = "✓" if self.completed else "○"
+        return f"{status} Room {self.room_id}: {self.name}"
+
+
+class SummoningChamber(Room):
+    """
+    Room 1: The Summoning Chamber
+    
+    Teaches the player how to summon their first sidekick (Phi3 Mini)
+    using the exact scroll text.
+    """
+    
+    def __init__(self):
+        description = """
+You awaken in a mystical chamber filled with ancient scrolls.
+Glowing runes on the walls read:
+
+  "To master the LLMs, one must first learn to summon them."
+  "Speak the sacred scroll words precisely to call forth your companion."
+
+On a pedestal before you lies a scroll labeled "Phi3 Mini".
+The scroll reads: "Summon Phi3 Mini to assist me!"
+
+To summon your first sidekick, type exactly what the scroll says.
+        """
+        
+        objectives = [
+            "Read the scroll on the pedestal",
+            "Summon Phi3 Mini using the exact scroll text"
+        ]
+        
+        super().__init__(1, "The Summoning Chamber", description.strip(), objectives)
+        self.available_directions = ["east"]  # Can go to Room 2
+
+
+class RiddleHall(Room):
+    """
+    Room 2: The Riddle Hall
+    
+    Presents the strawberry riddle. Phi3 Mini attempts but fails,
+    demonstrating small model limitations.
+    """
+    
+    def __init__(self):
+        description = """
+You enter a grand hall with crystalline walls that shimmer with data streams.
+At the center stands a mysterious Oracle of Puzzles.
+
+The Oracle speaks: "Many adventurers have attempted my riddles.
+Some succeed, some fail. Your companion's strength will be tested here."
+
+A riddle materializes in glowing text before you:
+  "How many 'r's are in 'strawberry'?"
+
+Your sidekick Phi3 Mini looks eager to help... but will they succeed?
+        """
+        
+        objectives = [
+            "Have your sidekick attempt the riddle",
+            "Observe the limitations of small models"
+        ]
+        
+        super().__init__(2, "The Riddle Hall", description.strip(), objectives)
+        self.available_directions = ["west", "east"]  # Can go back or forward
+
+
+class UpgradeForge(Room):
+    """
+    Room 3: The Upgrade Forge
+    
+    Teaches model management: removing Phi3 Mini and summoning Llama3 8b.
+    """
+    
+    def __init__(self):
+        description = """
+You discover an ancient forge where models are crafted and refined.
+A wise forge master appears and speaks:
+
+"I see your small companion has reached their limits. Fear not!
+The forge can reshape your tools. You must first release Phi3 Mini
+to make room for a more powerful ally."
+
+On the wall, you see instructions carved in stone:
+  1. Remove your current sidekick to free memory
+  2. Summon a more powerful model (Llama3 8b)
+  3. Return to retry the riddle with greater strength
+
+The forge master awaits your command.
+        """
+        
+        objectives = [
+            "Remove Phi3 Mini to free memory",
+            "Pull and summon Llama3 8b",
+            "Prepare to retry the riddle"
+        ]
+        
+        super().__init__(3, "The Upgrade Forge", description.strip(), objectives)
+        self.available_directions = ["west", "east"]  # Can go back or forward
+
+
+class VictoryChamber(Room):
+    """
+    Room 4: The Victory Chamber
+    
+    Retry the riddle with Llama3 8b and celebrate success.
+    """
+    
+    def __init__(self):
+        description = """
+You return to face the Oracle once more, this time with Llama3 8b at your side.
+The Oracle regards your new companion with respect.
+
+"Ah, you have learned well. A more capable ally stands with you now.
+Let us see if greater power brings greater wisdom."
+
+The same riddle appears before you:
+  "How many 'r's are in 'strawberry'?"
+
+But this time, you have the strength to succeed...
+        """
+        
+        objectives = [
+            "Have Llama3 8b attempt the riddle",
+            "Achieve victory and complete the Ground Level"
+        ]
+        
+        super().__init__(4, "The Victory Chamber", description.strip(), objectives)
+        self.available_directions = ["west"]  # Can go back but this is the end
+
+
+def create_room(room_id: int) -> Room:
+    """
+    Factory function to create a room by ID.
+    
+    Args:
+        room_id: The ID of the room to create
+        
+    Returns:
+        A Room instance
+        
+    Raises:
+        ValueError: If room_id is invalid
+    """
+    rooms = {
+        1: SummoningChamber,
+        2: RiddleHall,
+        3: UpgradeForge,
+        4: VictoryChamber
+    }
+    
+    if room_id not in rooms:
+        raise ValueError(f"Invalid room ID: {room_id}")
+    
+    return rooms[room_id]()
