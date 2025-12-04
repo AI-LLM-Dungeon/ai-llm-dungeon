@@ -145,194 +145,299 @@ class GameEngine:
     
     def _handle_room0_commands(self, command: str) -> None:
         """Handle commands specific to Room 0 (Ollama Village)."""
-        from .ascii_art import display_shaman
+        from .ascii_art import display_shaman, slow_print
         
-        # Track which lesson we're on based on completed objectives
-        lessons = {
-            "install": "room0_lesson1",
-            "serve": "room0_lesson2",
-            "list": "room0_lesson3",
-            "pull": "room0_lesson4",
-            "run": "room0_lesson5",
-            "rm": "room0_lesson6"
-        }
-        
+        # Room 0: User types 'learn' to begin (only time 'learn' is used)
         if command in ["learn", "teach", "lesson", "next"]:
-            # Show the Shaman and teach the next lesson
-            display_shaman()
-            
             if not self.player.has_completed_objective("room0_lesson1"):
+                display_shaman()
                 self._teach_install()
-            elif not self.player.has_completed_objective("room0_lesson2"):
-                self._teach_serve()
-            elif not self.player.has_completed_objective("room0_lesson3"):
-                self._teach_list()
-            elif not self.player.has_completed_objective("room0_lesson4"):
-                self._teach_pull()
-            elif not self.player.has_completed_objective("room0_lesson5"):
-                self._teach_run()
-            elif not self.player.has_completed_objective("room0_lesson6"):
-                self._teach_rm()
             else:
-                print("\n✅ All lessons complete!")
-                print("The Shaman nods with approval.")
-                print("'You are ready, young apprentice. Proceed east to the Summoning Chamber.")
-                print("Your true journey begins now.'\n")
+                print("\n💡 Hint: You've already started your training!")
+                print("Try practicing the commands you've learned.")
+        
+        # Lesson 1: User must type 'ollama' to complete
+        elif command == "ollama":
+            if not self.player.has_completed_objective("room0_lesson1"):
+                print("\n⚠️  Please type 'learn' first to begin your training.")
+            elif self.player.has_completed_objective("room0_lesson2"):
+                print("\n✅ You've already learned this command! Continue with the next lesson.")
+            else:
+                display_shaman()
+                self._complete_lesson1()
+        
+        # Lesson 2: User must type 'ollama serve' to complete
+        elif command == "ollama serve":
+            if not self.player.has_completed_objective("room0_lesson2"):
+                if not self.player.has_completed_objective("room0_lesson1"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson2()
+            else:
+                print("\n✅ You've already learned this command! Continue with the next lesson.")
+        
+        # Lesson 3: User must type 'ollama list' to complete
+        elif command == "ollama list":
+            if not self.player.has_completed_objective("room0_lesson3"):
+                if not self.player.has_completed_objective("room0_lesson2"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson3()
+            else:
+                # Allow list command anytime after lesson 3
+                self.ollama.list_models()
+        
+        # Lesson 4: User must type 'ollama pull phi3:mini' to complete
+        elif command == "ollama pull phi3:mini":
+            if not self.player.has_completed_objective("room0_lesson4"):
+                if not self.player.has_completed_objective("room0_lesson3"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson4()
+            else:
+                # Allow pull command anytime after lesson 4
+                self.ollama.pull_model("phi3-mini")
+        
+        # Lesson 5: User must type 'ollama run phi3:mini' to complete
+        elif command == "ollama run phi3:mini":
+            if not self.player.has_completed_objective("room0_lesson5"):
+                if not self.player.has_completed_objective("room0_lesson4"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson5()
+            else:
+                print("\n✅ You've already learned this command!")
+        
+        # Lesson 6: User must type 'ollama rm phi3:mini' to complete
+        elif command == "ollama rm phi3:mini":
+            if not self.player.has_completed_objective("room0_lesson6"):
+                if not self.player.has_completed_objective("room0_lesson5"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson6()
+            else:
+                # Allow rm command anytime after lesson 6
+                self.ollama.remove_model("phi3-mini")
         
         elif command == "east":
             if self.player.has_completed_objective("room0_complete"):
                 self._move_to_room(1)
             else:
-                print("⚠️  The Shaman blocks your path.")
+                print("\n⚠️  The Shaman blocks your path.")
                 print("'You must complete all lessons first, young one.'")
-                print("Type 'learn' to continue your training.")
+                if not self.player.has_completed_objective("room0_lesson1"):
+                    print("Hint: Type 'learn' to begin your training.")
+                else:
+                    print("Hint: Practice the commands you've learned!")
         
         else:
-            print(f"Unknown command. Type 'help' for available commands.")
-            print("Hint: Type 'learn' to receive the Shaman's teachings!")
+            print(f"\nUnknown command. Type 'help' for available commands.")
+            if not self.player.has_completed_objective("room0_lesson1"):
+                print("Hint: Type 'learn' to receive the Shaman's teachings!")
     
     def _teach_install(self) -> None:
         """Teach the player about installing Ollama."""
-        print("\n=== LESSON 1: Installing Ollama ===\n")
-        print("The Shaman speaks:")
-        print("'Before you can wield the power of local LLMs, you must first")
-        print("install the Ollama tool on your system.'\n")
+        from .ascii_art import slow_print
         
-        print("For Linux & macOS:")
-        print("  curl -fsSL https://ollama.ai/install.sh | sh\n")
+        slow_print("\n=== LESSON 1: Installing Ollama ===\n", 0.5)
+        slow_print("The Shaman speaks:")
+        slow_print("'Before you can wield the power of local LLMs, you must first")
+        slow_print("install the Ollama tool on your system.'\n")
         
-        print("For Windows:")
-        print("  Download the installer from https://ollama.ai\n")
+        slow_print("For Linux & macOS:")
+        slow_print("  curl -fsSL https://ollama.ai/install.sh | sh\n")
         
-        print("'Once installed, Ollama gives you command-line access to powerful")
-        print("language models that run entirely on your own machine.'\n")
+        slow_print("For Windows:")
+        slow_print("  Download the installer from https://ollama.ai\n")
+        
+        slow_print("'Once installed, Ollama gives you command-line access to powerful")
+        slow_print("language models that run entirely on your own machine.'\n")
+        
+        slow_print("Now, let's practice the command. Type: ollama")
+    
+    def _complete_lesson1(self) -> None:
+        """Complete lesson 1 by typing 'ollama'."""
+        from .ascii_art import slow_print
+        
+        print("\n✅ Correct! The `ollama` command is your gateway to LLM management.")
+        print()
         
         self.player.complete_objective("room0_lesson1")
-        print("✅ Lesson 1 Complete!")
-        print("Type 'learn' to continue to the next lesson.\n")
+        
+        slow_print("=== LESSON 2: Starting the Ollama Service ===\n", 0.5)
+        slow_print("The Shaman demonstrates:")
+        slow_print("'The `ollama serve` command starts the Ollama daemon in the background.")
+        slow_print("This service listens for requests and manages your LLM models.")
+        slow_print("On most systems, this starts automatically, but it's good to know!'\n")
+        
+        slow_print("Now, practice this command. Type: ollama serve")
     
-    def _teach_serve(self) -> None:
-        """Teach the player about ollama serve."""
-        print("\n=== LESSON 2: Starting the Ollama Service ===\n")
-        print("The Shaman demonstrates:")
+    def _complete_lesson2(self) -> None:
+        """Complete lesson 2 by typing 'ollama serve'."""
+        from .ascii_art import slow_print
         
+        print()
         self.ollama.serve()
-        
-        print("'The `ollama serve` command starts the Ollama daemon in the background.")
-        print("This service listens for requests and manages your LLM models.")
-        print("On most systems, this starts automatically, but it's good to know!'\n")
+        print()
         
         self.player.complete_objective("room0_lesson2")
-        print("✅ Lesson 2 Complete!")
-        print("Type 'learn' to continue to the next lesson.\n")
+        
+        slow_print("✅ Lesson 2 Complete!\n", 0.5)
+        slow_print("=== LESSON 3: Listing Your Models ===\n")
+        slow_print("The Shaman explains:")
+        slow_print("'To see which models you have installed, use: ollama list'")
+        slow_print("'This command will be useful to verify your models after pulling them.'\n")
+        
+        slow_print("Practice this command now. Type: ollama list")
     
-    def _teach_list(self) -> None:
-        """Teach the player about ollama list."""
-        print("\n=== LESSON 3: Listing Your Models ===\n")
-        print("The Shaman explains:")
-        print("'To see which models you have installed, use: ollama list'")
-        print("'Let me show you...'\n")
+    def _complete_lesson3(self) -> None:
+        """Complete lesson 3 by typing 'ollama list'."""
+        from .ascii_art import slow_print
         
-        # Show empty list first
+        print()
         self.ollama.list_models()
-        
-        print("The Shaman nods:")
-        print("'You haven't pulled any models yet. Let's learn how to do that next!")
-        print("This command will be useful to verify your models after pulling them.'\n")
+        print()
         
         self.player.complete_objective("room0_lesson3")
-        print("✅ Lesson 3 Complete!")
-        print("Type 'learn' to continue to the next lesson.\n")
+        
+        slow_print("✅ Lesson 3 Complete!\n", 0.5)
+        slow_print("The Shaman nods:")
+        slow_print("'You haven't pulled any models yet. Let's learn how to do that next!\n")
+        
+        slow_print("=== LESSON 4: Pulling (Downloading) Models ===\n")
+        slow_print("The Shaman teaches the most important command:")
+        slow_print("'To download a model, use: ollama pull <model-name>'")
+        slow_print("'Each model has a size - smaller models are faster but less capable.")
+        slow_print("Phi3 Mini is about 2.3 GB. Larger models like Llama3 are 4-5 GB.")
+        slow_print("Choose based on your needs and available disk space!'\n")
+        
+        slow_print("Now, let's pull the phi3:mini model. Type: ollama pull phi3:mini")
     
-    def _teach_pull(self) -> None:
-        """Teach the player about ollama pull."""
-        print("\n=== LESSON 4: Pulling (Downloading) Models ===\n")
-        print("The Shaman teaches the most important command:")
-        print("'To download a model, use: ollama pull <model-name>'\n")
+    def _complete_lesson4(self) -> None:
+        """Complete lesson 4 by typing 'ollama pull phi3:mini'."""
+        from .ascii_art import slow_print
         
-        print("Let's pull the phi3:mini model as an example:")
+        print()
         self.ollama.pull_model("phi3-mini")
-        
-        print("'Each model has a size - smaller models are faster but less capable.")
-        print("Phi3 Mini is about 2.3 GB. Larger models like Llama3 are 4-5 GB.")
-        print("Choose based on your needs and available disk space!'\n")
+        print()
         
         self.player.complete_objective("room0_lesson4")
-        print("✅ Lesson 4 Complete!")
-        print("Type 'learn' to continue to the next lesson.\n")
+        
+        slow_print("✅ Lesson 4 Complete!\n", 0.5)
+        slow_print("=== LESSON 5: Running Models ===\n")
+        slow_print("The Shaman demonstrates:")
+        slow_print("'Once a model is pulled, you can chat with it using: ollama run <model-name>'\n")
+        
+        slow_print("Example:")
+        slow_print("  $ ollama run phi3:mini")
+        slow_print("  >>> Tell me about AI")
+        slow_print("  [The model responds with information about AI...]")
+        slow_print("  >>> /bye\n")
+        
+        slow_print("'This is how you interact with your local LLM assistants!'\n")
+        
+        slow_print("Practice running the model. Type: ollama run phi3:mini")
     
-    def _teach_run(self) -> None:
-        """Teach the player about ollama run."""
-        print("\n=== LESSON 5: Running Models ===\n")
-        print("The Shaman demonstrates:")
-        print("'Once a model is pulled, you can chat with it using: ollama run <model-name>'\n")
+    def _complete_lesson5(self) -> None:
+        """Complete lesson 5 by typing 'ollama run phi3:mini'."""
+        from .ascii_art import slow_print
         
-        print("Example:")
-        print("  $ ollama run phi3:mini")
-        print("  >>> Tell me about AI")
-        print("  [The model responds with information about AI...]")
-        print("  >>> /bye\n")
-        
-        print("'You can also use it for one-off questions:")
-        print("  $ ollama run phi3:mini 'What is 2+2?'")
-        print("  4\n")
-        
-        print("'This is how you interact with your local LLM assistants!'\n")
+        print()
+        slow_print("🤖 Simulating: ollama run phi3:mini\n", 0.5)
+        slow_print("Sidekick phi3:mini activated successfully!")
+        print()
         
         self.player.complete_objective("room0_lesson5")
-        print("✅ Lesson 5 Complete!")
-        print("Type 'learn' to continue to the final lesson.\n")
+        
+        slow_print("✅ Lesson 5 Complete!\n", 0.5)
+        slow_print("=== LESSON 6: Removing Models ===\n")
+        slow_print("The Shaman explains the final command:")
+        slow_print("'Models take up disk space. When you no longer need one,")
+        slow_print("you can remove it with: ollama rm <model-name>'")
+        slow_print("'This frees up space for other models. You can always pull it again later!")
+        slow_print("Good model management keeps your system tidy and efficient.'\n")
+        
+        slow_print("Practice removing the model. Type: ollama rm phi3:mini")
     
-    def _teach_rm(self) -> None:
-        """Teach the player about ollama rm."""
-        print("\n=== LESSON 6: Removing Models ===\n")
-        print("The Shaman explains the final command:")
-        print("'Models take up disk space. When you no longer need one,")
-        print("you can remove it with: ollama rm <model-name>'\n")
+    def _complete_lesson6(self) -> None:
+        """Complete lesson 6 by typing 'ollama rm phi3:mini'."""
+        from .ascii_art import slow_print
         
-        print("Let's remove the phi3-mini model we pulled earlier:")
+        print()
         self.ollama.remove_model("phi3-mini")
-        
-        print("'This frees up space for other models. You can always pull it again later!")
-        print("Good model management keeps your system tidy and efficient.'\n")
-        
-        print("The Shaman smiles warmly:")
-        print("'You have learned all six fundamental Ollama commands!")
-        print("You are now ready to face the challenges ahead.'\n")
+        print()
         
         self.player.complete_objective("room0_lesson6")
         self.player.complete_objective("room0_complete")
         self.current_room.mark_completed()
         
-        print("🎓 TRAINING COMPLETE! 🎓")
-        print("You may now proceed east to the Summoning Chamber.")
-        print("Type 'east' when you are ready.\n")
+        slow_print("✅ Lesson 6 Complete!\n", 0.5)
+        slow_print("The Shaman smiles warmly:")
+        slow_print("'You have learned all six fundamental Ollama commands!")
+        slow_print("You are now ready to face the challenges ahead.'\n")
+        
+        slow_print("🎓 TRAINING COMPLETE! 🎓")
+        slow_print("You may now proceed east to the Summoning Chamber.")
+        slow_print("Type 'east' when you are ready.\n")
     
     def _handle_room1_commands(self, command: str) -> None:
         """Handle commands specific to Room 1 (Summoning Chamber)."""
+        from .ascii_art import slow_print
+        
         # Check for real Ollama command
         phi3 = self.sidekicks["Phi3 Mini"]
         
         if command == "ollama pull phi3:mini" or command == phi3.summon_scroll.lower():
-            # Correct summon command - pull the model first
-            print("\n📥 Pulling the Phi3 Mini model...")
-            self.ollama.pull_model("phi3-mini")
-            
-            # Then summon
-            print(phi3.summon())
-            self.player.set_active_sidekick(phi3)
-            
-            # Unlock tip
-            self.player.unlock_tip("tip_04", self.tips["tip_04"]["text"])
-            
-            # Mark objective complete
-            self.player.complete_objective("room1_complete")
-            self.current_room.mark_completed()
-            
-            print("\n✅ Objective Complete!")
-            print("You've learned to summon a sidekick using the Ollama pull command.")
-            print("\nYou can now proceed to the next room.")
-            print("Type 'east' to continue your journey.")
+            if not self.player.has_completed_objective("room1_pulled"):
+                # Correct summon command - pull the model first
+                print("\n📥 Pulling the Phi3 Mini model...")
+                self.ollama.pull_model("phi3-mini")
+                
+                # Then summon
+                print(phi3.summon())
+                self.player.set_active_sidekick(phi3)
+                
+                # Mark pull objective complete
+                self.player.complete_objective("room1_pulled")
+                
+                print()
+                slow_print("✅ Model pulled successfully!\n", 0.5)
+                slow_print("Before continuing, verify your model is ready.")
+                slow_print("Type: ollama list")
+            else:
+                print("\n✅ You've already pulled this model!")
+                print("Try: ollama list")
+        
+        elif command == "ollama list":
+            if not self.player.has_completed_objective("room1_pulled"):
+                print("\n⚠️  You need to pull a model first!")
+                print("Try: ollama pull phi3:mini")
+            else:
+                print()
+                self.ollama.list_models()
+                
+                if not self.player.has_completed_objective("room1_complete"):
+                    print()
+                    slow_print("✅ Perfect! You can see phi3-mini is now available as a sidekick.", 0.5)
+                    slow_print("This command helps you track which models are ready to use.")
+                    
+                    # Unlock tip
+                    self.player.unlock_tip("tip_04", self.tips["tip_04"]["text"])
+                    
+                    # Mark objective complete
+                    self.player.complete_objective("room1_complete")
+                    self.current_room.mark_completed()
+                    
+                    print()
+                    slow_print("✅ Objective Complete!")
+                    slow_print("You've learned to summon a sidekick using Ollama commands.")
+                    slow_print("\nYou can now proceed to the next room.")
+                    slow_print("Type 'east' to continue your journey.")
         
         elif command == "west":
             self._move_to_room(0)
@@ -341,20 +446,26 @@ class GameEngine:
             if self.player.has_completed_objective("room1_complete"):
                 self._move_to_room(2)
             else:
-                print("⚠️  You must complete this room's objectives first!")
-                print("Try summoning Phi3 Mini using: ollama pull phi3:mini")
+                print("\n⚠️  You must complete this room's objectives first!")
+                if not self.player.has_completed_objective("room1_pulled"):
+                    print("Try: ollama pull phi3:mini")
+                else:
+                    print("Try: ollama list")
         
         elif "ollama" in command and "pull" in command:
-            print("❌ That's not quite right.")
+            print("\n❌ That's not quite right.")
             print("Make sure to use the exact command: ollama pull phi3:mini")
         
         elif "summon" in command:
-            print("💡 Hint: In the real world, we use Ollama commands, not scroll text!")
+            print("\n💡 Hint: In the real world, we use Ollama commands, not scroll text!")
             print("Try: ollama pull phi3:mini")
         
         else:
-            print(f"Unknown command. Type 'help' for available commands.")
-            print("Hint: Try the command shown on the scroll: ollama pull phi3:mini")
+            print(f"\nUnknown command. Type 'help' for available commands.")
+            if not self.player.has_completed_objective("room1_pulled"):
+                print("Hint: Try the command shown on the scroll: ollama pull phi3:mini")
+            else:
+                print("Hint: Verify your models with: ollama list")
     
     def _handle_room2_commands(self, command: str) -> None:
         """Handle commands specific to Room 2 (Riddle Hall)."""
@@ -427,11 +538,11 @@ class GameEngine:
         if command == "west":
             self._move_to_room(3)
         
-        elif command.lower() == "ollama appr3nt1c3":
+        elif command == "ollama apprentice":
             self._unlock_victory()
         
         else:
-            print(f"Unknown command. Type 'help' for available commands.")
+            print(f"\nUnknown command. Type 'help' for available commands.")
             print("Hint: Enter the password revealed by Llama3 8b!")
     
     def _attempt_riddle_room2(self) -> None:
@@ -609,7 +720,7 @@ class GameEngine:
             if success:
                 print("The Oracle's eyes glow with approval!")
                 print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
-                print("The Oracle reveals: 'The password to unlock it is: Ollama Appr3nt1c3'")
+                print("The Oracle reveals: 'The password to unlock it is: Ollama Apprentice'")
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
                 

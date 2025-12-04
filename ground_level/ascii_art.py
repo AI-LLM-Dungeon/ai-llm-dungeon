@@ -1,5 +1,7 @@
 """ASCII art assets for the Ground Level of AI-LLM-Dungeon."""
 
+import time
+
 # Welcome banner for Ground Level
 GROUND_LEVEL_BANNER = r"""
 ╔════════════════════════════════════════════════════════════╗
@@ -120,3 +122,17 @@ def display_room_transition() -> None:
 def display_shaman() -> None:
     """Displays the Shaman ASCII art."""
     print(SHAMAN_ART)
+
+def slow_print(text: str, delay: float = 0.3) -> None:
+    """
+    Print text with a delay between lines for better readability.
+    
+    Args:
+        text: The text to print (can contain newlines)
+        delay: Delay in seconds between lines (default: 0.3)
+    """
+    lines = text.split('\n')
+    for line in lines:
+        print(line)
+        if line.strip():  # Only add delay after non-empty lines
+            time.sleep(delay)
