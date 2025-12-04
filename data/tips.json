@@ -1,0 +1,22 @@
+[
+    {
+        "id": "tip_01",
+        "text": "Small models are fast and light but forget quickly.",
+        "unlocked_by_default": false
+    },
+    {
+        "id": "tip_02",
+        "text": "Larger models handle longer prompts and complex reasoning.",
+        "unlocked_by_default": false
+    },
+    {
+        "id": "tip_03",
+        "text": "Remove unused models to free memory and keep your system tidy.",
+        "unlocked_by_default": false
+    },
+    {
+        "id": "tip_04",
+        "text": "Summoning a sidekick requires the correct prompt (scroll).",
+        "unlocked_by_default": false
+    }
+]
