@@ -2,7 +2,7 @@
 
 import time
 import sys
-from typing import Optional
+from typing import Optional, Set
 
 
 class OllamaSimulator:
@@ -20,7 +20,7 @@ class OllamaSimulator:
     
     def __init__(self):
         """Initialize the Ollama simulator."""
-        self.installed_models: set[str] = set()
+        self.installed_models: Set[str] = set()
     
     def pull_model(self, model_name: str) -> bool:
         """

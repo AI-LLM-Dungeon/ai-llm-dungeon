@@ -209,12 +209,13 @@ class GameEngine:
         elif command in ["remove", "remove phi3", "remove phi3 mini"]:
             self._remove_phi3_mini()
         
-        elif command == "summon llama3 8b to assist me!":
+        elif command == self.sidekicks["Llama3 8b"].summon_scroll.lower():
             self._summon_llama3()
         
         elif "summon" in command and "llama" in command:
+            llama_scroll = self.sidekicks["Llama3 8b"].summon_scroll
             print("❌ Not quite right. Remember the exact scroll text:")
-            print("'Summon Llama3 8b to assist me!'")
+            print(f"'{llama_scroll}'")
         
         else:
             print(f"Unknown command. Type 'help' for available commands.")
@@ -286,8 +287,9 @@ class GameEngine:
             # Unlock tip
             self.player.unlock_tip("tip_03", self.tips["tip_03"]["text"])
             
+            llama_scroll = self.sidekicks["Llama3 8b"].summon_scroll
             print("Now you can summon a more powerful model!")
-            print("Type: 'Summon Llama3 8b to assist me!'")
+            print(f"Type: '{llama_scroll}'")
         else:
             print("⚠️  Phi3 Mini is not your active sidekick.")
     
