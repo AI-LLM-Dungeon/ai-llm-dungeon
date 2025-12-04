@@ -249,25 +249,28 @@ class GameEngine:
         success, response = self.player.active_sidekick.attempt_riddle(riddle)
         print(response)
         
+        # Always complete the objective after attempting (the learning is in the attempt)
         if not success:
             print("\n💡 Learning Moment:")
             print("Phi3 Mini is a small, efficient model but struggles with")
             print("certain tasks like careful counting. This is a trade-off:")
             print("smaller size = faster but less capable.")
-            
-            # Unlock tip
-            self.player.unlock_tip("tip_01", self.tips["tip_01"]["text"])
-            
-            # Mark objective complete
-            self.player.complete_objective("room2_complete")
-            self.current_room.mark_completed()
-            
-            print("\n✅ Objective Complete!")
-            print("You've witnessed the limitations of small models.")
-            print("\nProceed east to the Upgrade Forge to get a more powerful ally!")
         else:
-            print("\n(In the rare case Phi3 Mini succeeds, that's just lucky!)")
-            print("But normally, you'd need a larger model for this task.")
+            print("\n💡 Learning Moment:")
+            print("Phi3 Mini got lucky this time! But with only a 20% success rate,")
+            print("small models aren't reliable for complex tasks like precise counting.")
+            print("Larger models have higher success rates for challenging problems.")
+        
+        # Unlock tip
+        self.player.unlock_tip("tip_01", self.tips["tip_01"]["text"])
+        
+        # Mark objective complete
+        self.player.complete_objective("room2_complete")
+        self.current_room.mark_completed()
+        
+        print("\n✅ Objective Complete!")
+        print("You've learned about the trade-offs of small models.")
+        print("\nProceed east to the Upgrade Forge to get a more powerful ally!")
     
     def _remove_phi3_mini(self) -> None:
         """Remove Phi3 Mini sidekick."""
