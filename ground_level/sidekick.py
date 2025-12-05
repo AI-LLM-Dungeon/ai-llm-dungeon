@@ -1,9 +1,13 @@
 """Sidekick class for the Ground Level of AI-LLM-Dungeon."""
 
 import random
+import time
 from typing import Optional
 from .puzzle import Puzzle
 from .ascii_art import get_sidekick_art
+
+# Message constants for response generation
+_THINKING_MESSAGE = "thinks carefully..."
 
 
 class Sidekick:
@@ -70,6 +74,24 @@ class Sidekick:
         message += f"Memory freed: {self.memory} GB\n"
         return message
     
+    def _calculate_success(self) -> bool:
+        """
+        Calculate whether this sidekick succeeds based on memory size.
+        
+        Returns:
+            True if the attempt succeeds, False otherwise
+        """
+        # Calculate success probability based on memory size
+        if self.memory <= 2:
+            success_rate = 0.20  # Phi3 Mini struggles with counting
+        elif self.memory <= 5:
+            success_rate = 0.50  # Qwen Lite is better but not perfect
+        else:
+            success_rate = 0.95  # Llama3 8b is highly capable
+        
+        # Simulate the LLM's attempt
+        return random.random() < success_rate
+    
     def attempt_riddle(self, puzzle: Puzzle) -> tuple[bool, str]:
         """
         Attempt to solve a puzzle based on this sidekick's capabilities.
@@ -89,57 +111,149 @@ class Sidekick:
         if not self.active:
             return False, f"Error: {self.name} is not active. Please summon them first."
         
-        # Calculate success probability based on memory size
-        if self.memory <= 2:
-            success_rate = 0.20  # Phi3 Mini struggles with counting
-        elif self.memory <= 5:
-            success_rate = 0.50  # Qwen Lite is better but not perfect
-        else:
-            success_rate = 0.95  # Llama3 8b is highly capable
-        
         # Simulate the LLM's attempt
-        success = random.random() < success_rate
+        success = self._calculate_success()
         
-        # Generate response based on outcome
+        # Generate response based on outcome (explicitly pass False for backward compatibility)
         if success:
-            response = self._generate_success_response(puzzle)
+            response = self._generate_success_response(puzzle, print_with_delay=False)
         else:
-            response = self._generate_failure_response(puzzle)
+            response = self._generate_failure_response(puzzle, print_with_delay=False)
         
         return success, response
     
-    def _generate_success_response(self, puzzle: Puzzle) -> str:
-        """Generate a response for a successful puzzle attempt."""
-        response = f"\n{self.name} thinks carefully...\n"
-        response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+    def attempt_riddle_with_delays(self, puzzle: Puzzle) -> bool:
+        """
+        Attempt to solve a puzzle with delayed printing for interactive experience.
         
-        # For the strawberry riddle
-        if "strawberry" in puzzle.prompt.lower():
-            response += f"Let me count each letter carefully:\n"
-            response += f"s-t-r-a-w-b-e-r-r-y\n"
-            response += f"I can see the 'r's appearing at positions 3, 8, and 9.\n\n"
+        This method prints the response text with time delays to simulate the model
+        thinking in real-time, creating a more immersive experience.
         
-        response += f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n"
-        return response
-    
-    def _generate_failure_response(self, puzzle: Puzzle) -> str:
-        """Generate a response for a failed puzzle attempt."""
-        response = f"\n{self.name} thinks carefully...\n"
-        response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+        Timing details:
+        - "thinks carefully..." message: 1.5s pause
+        - "Analyzing: <question>" message: 1.0s pause
+        - Counting/analysis steps: 1.0-1.5s pauses between steps
+        - Final answer display: immediate
         
-        # For the strawberry riddle, generate plausible wrong answers
-        if "strawberry" in puzzle.prompt.lower():
-            wrong_answers = ["2", "1", "4"]
-            wrong_answer = random.choice(wrong_answers)
+        Total delay: approximately 4-6 seconds depending on success/failure
+        
+        Args:
+            puzzle: The puzzle to attempt
             
-            response += f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...\n"
-            response += f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n\n"
-            response += f"💭 {self.name} seems uncertain and made an error.\n"
-            response += f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n"
-        else:
-            response += f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n"
+        Returns:
+            True if the riddle was solved successfully, False otherwise
+        """
+        if not self.active:
+            print(f"Error: {self.name} is not active. Please summon them first.")
+            return False
         
-        return response
+        # Simulate the LLM's attempt
+        success = self._calculate_success()
+        
+        # Generate and print response with delays
+        if success:
+            self._generate_success_response(puzzle, print_with_delay=True)
+        else:
+            self._generate_failure_response(puzzle, print_with_delay=True)
+        
+        return success
+    
+    def _generate_success_response(self, puzzle: Puzzle, print_with_delay: bool = False) -> str:
+        """Generate a response for a successful puzzle attempt.
+        
+        Args:
+            puzzle: The puzzle to respond to
+            print_with_delay: If True, prints text with delays for interactive feel
+                             and returns empty string. If False, returns formatted
+                             response string without printing.
+        
+        Returns:
+            Response text if print_with_delay is False, empty string otherwise
+        """
+        if print_with_delay:
+            # Interactive mode with delays
+            print(f"\n{self.name} {_THINKING_MESSAGE}")
+            time.sleep(1.5)
+            print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
+            time.sleep(1.0)
+            
+            # For the strawberry riddle
+            if "strawberry" in puzzle.prompt.lower():
+                print(f"Let me count each letter carefully:")
+                time.sleep(1.0)
+                print(f"s-t-r-a-w-b-e-r-r-y")
+                time.sleep(1.5)
+                print(f"I can see the 'r's appearing at positions 3, 8, and 9.\n")
+                time.sleep(1.0)
+            
+            print(f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n")
+            return ""  # Already printed
+        else:
+            # Original behavior - return as string
+            response = f"\n{self.name} {_THINKING_MESSAGE}\n"
+            response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+            
+            # For the strawberry riddle
+            if "strawberry" in puzzle.prompt.lower():
+                response += f"Let me count each letter carefully:\n"
+                response += f"s-t-r-a-w-b-e-r-r-y\n"
+                response += f"I can see the 'r's appearing at positions 3, 8, and 9.\n\n"
+            
+            response += f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n"
+            return response
+    
+    def _generate_failure_response(self, puzzle: Puzzle, print_with_delay: bool = False) -> str:
+        """Generate a response for a failed puzzle attempt.
+        
+        Args:
+            puzzle: The puzzle to respond to
+            print_with_delay: If True, prints text with delays for interactive feel
+                             and returns empty string. If False, returns formatted
+                             response string without printing.
+        
+        Returns:
+            Response text if print_with_delay is False, empty string otherwise
+        """
+        if print_with_delay:
+            # Interactive mode with delays
+            print(f"\n{self.name} {_THINKING_MESSAGE}")
+            time.sleep(1.5)
+            print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
+            time.sleep(1.0)
+            
+            # For the strawberry riddle, generate plausible wrong answers
+            if "strawberry" in puzzle.prompt.lower():
+                wrong_answers = ["2", "1", "4"]
+                wrong_answer = random.choice(wrong_answers)
+                
+                print(f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...")
+                time.sleep(1.5)
+                print(f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n")
+                time.sleep(1.0)
+                print(f"💭 {self.name} seems uncertain and made an error.")
+                time.sleep(0.5)
+                print(f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n")
+            else:
+                print(f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n")
+            return ""  # Already printed
+        else:
+            # Original behavior - return as string
+            response = f"\n{self.name} {_THINKING_MESSAGE}\n"
+            response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+            
+            # For the strawberry riddle, generate plausible wrong answers
+            if "strawberry" in puzzle.prompt.lower():
+                wrong_answers = ["2", "1", "4"]
+                wrong_answer = random.choice(wrong_answers)
+                
+                response += f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...\n"
+                response += f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n\n"
+                response += f"💭 {self.name} seems uncertain and made an error.\n"
+                response += f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n"
+            else:
+                response += f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n"
+            
+            return response
     
     def get_status(self) -> str:
         """

@@ -2,6 +2,7 @@
 
 import json
 import os
+import time
 from typing import Dict, Optional, List
 from .player import Player
 from .sidekick import Sidekick
@@ -9,6 +10,10 @@ from .puzzle import Puzzle
 from .room import Room, create_room
 from .ollama_simulator import OllamaSimulator
 from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print, display_certificate, display_descend
+
+# ANSI color codes for terminal output
+COLOR_CYAN = '\033[96m'
+COLOR_RESET = '\033[0m'
 
 
 class GameEngine:
@@ -657,11 +662,10 @@ class GameEngine:
         
         # Check if it's about strawberry
         if "strawberry" in user_question.lower() or "r" in user_question.lower():
-            # Get the riddle and have phi3 attempt it
+            # Get the riddle and have phi3 attempt it with delays
             riddle = self.puzzles["riddle_01"]
-            success, response = self.player.active_sidekick.attempt_riddle(riddle)
+            success = self.player.active_sidekick.attempt_riddle_with_delays(riddle)
             
-            print(f"\nPhi3 Mini: {response}\n")
             print(">>> /bye")
             print("Exiting interactive session.\n")
             
@@ -730,7 +734,8 @@ class GameEngine:
                 print("Ancient locks click open one by one...")
                 print("The chest lid slowly rises, revealing a scroll inside.")
                 print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
-                print("The Oracle reveals: 'The password to unlock it is: Ollama Apprentice'")
+                # Display password in cyan color for visibility
+                print(f"The Oracle reveals: 'The password to unlock it is: {COLOR_CYAN}Ollama Apprentice{COLOR_RESET}'")
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
                 
@@ -821,6 +826,7 @@ class GameEngine:
         print("\n🔓 Password accepted!")
         print("The ancient lock glows brightly and the chamber doors swing open!")
         print("\nYou step inside the Victory Chamber...")
+        time.sleep(1.5)
         print()
         
         # Award points
@@ -832,32 +838,49 @@ class GameEngine:
         
         # Show victory screen
         display_victory()
+        time.sleep(1.0)
         
         print("🏆 GROUND LEVEL COMPLETE! 🏆\n")
         print("You have earned the title: \"Ollama Apprentice\"\n")
+        time.sleep(1.0)
         
         # Display certificate
         display_certificate()
+        time.sleep(1.5)
+        
+        # Prompt user to press Enter before showing the path forward
+        print()
+        input("Press Enter to continue...")
+        print()
         
         # Show the path forward
         print("\n🚪 THE PATH FORWARD 🚪\n")
         print("Your training is complete, but your adventure has just begun!")
         print("The dungeon descends deeper with greater challenges awaiting...\n")
+        time.sleep(1.0)
         
         print("  ⬇️  NEXT: The Tokenizer Tomb (Entrance Level)")
         print("      Learn how LLMs see the world through tokens.")
         print("      Run: python3 entrance/tokenizer_fight.py \"your text\"\n")
+        time.sleep(0.8)
         
         print("  🔮 COMING SOON:")
         print("      • Temperature Tavern - Master sampling parameters")
         print("      • Context Catacombs - Understand context windows")
         print("      • Prompt Palace - Advanced prompt engineering\n")
+        time.sleep(0.8)
         
         # Real-world next steps
         print("💡 REAL-WORLD NEXT STEPS:")
         print("   1. Install Ollama for real: curl -fsSL https://ollama.ai/install.sh | sh")
         print("   2. Pull your first model: ollama pull llama3")
-        print("   3. Start chatting: ollama run llama3\n")
+        print("   3. Start chatting: ollama run llama3")
+        print()
+        print("📚 Learn more about Ollama:")
+        print("   • GitHub repository: https://github.com/ollama/ollama")
+        print("   • API docs: https://github.com/ollama/ollama/blob/main/docs/api.md")
+        print("   • Model library: https://ollama.com/library\n")
+        time.sleep(0.5)
         
         # Show stats
         print(f"Final Knowledge Points: {self.player.knowledge_points}")

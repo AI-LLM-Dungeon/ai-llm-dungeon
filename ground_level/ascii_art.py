@@ -27,6 +27,12 @@ CERTIFICATE_ART = r"""
 ║                                                              ║
 ║  You understand that larger models = more capable but        ║
 ║  require more resources. Choose wisely, young summoner.      ║
+║                                                              ║
+║  📚 DOCUMENTATION & RESOURCES:                               ║
+║    • Ollama GitHub: https://github.com/ollama/ollama         ║
+║    • API Documentation:                                      ║
+║      https://github.com/ollama/ollama/blob/main/docs/api.md  ║
+║    • Model Library: https://ollama.com/library               ║
 ╚══════════════════════════════════════════════════════════════╝
 """
 
