@@ -111,6 +111,51 @@ class OllamaSimulator:
         print()
         return list(self.installed_models)
     
+    def show_model(self, model_name: str) -> bool:
+        """
+        Simulate showing detailed information about a model.
+        
+        Displays model metadata including architecture, parameters, quantization,
+        and family information.
+        
+        Args:
+            model_name: Name of the model to show
+            
+        Returns:
+            True if successful, False if model not found
+        """
+        print(f"\n📋 Simulating: ollama show {model_name}")
+        
+        if model_name not in self.installed_models:
+            print(f"⚠️  Error: model '{model_name}' not found\n")
+            return False
+        
+        metadata = self.model_metadata.get(model_name, {
+            "id": "abc123def456",
+            "size": "1.5 GB"
+        })
+        
+        # Display detailed model information
+        print(f"\nModel")
+        print(f"  architecture      llama")
+        print(f"  parameters        3.8B")
+        print(f"  quantization      Q4_0")
+        print(f"  context length    2048")
+        print(f"  embedding length  3072")
+        print()
+        print(f"Parameters")
+        print(f"  stop  \"<|im_start|>\"")
+        print(f"  stop  \"<|im_end|>\"")
+        print()
+        print(f"License")
+        print(f"  MIT License")
+        print()
+        print(f"System")
+        print(f"  You are a helpful assistant.")
+        print()
+        
+        return True
+    
     def is_model_available(self, model_name: str) -> bool:
         """
         Check if a model is available (installed).
@@ -197,12 +242,14 @@ class OllamaSimulator:
 ╠═══════════════════════════════════════════════════════════╣
 ║                                                           ║
 ║  ollama pull <model>   - Download a model                 ║
-║  ollama remove <model> - Remove a model                   ║
-║  ollama run <model>    - Run a model with a prompt        ║
 ║  ollama list           - List installed models            ║
+║  ollama show <model>   - Show model information           ║
+║  ollama run <model>    - Run a model with a prompt        ║
+║  ollama remove <model> - Remove a model                   ║
 ║                                                           ║
 ║  Examples:                                                ║
 ║    ollama pull llama3                                     ║
+║    ollama show llama3                                     ║
 ║    ollama remove phi3                                     ║
 ║    ollama run llama3 "Tell me a joke"                     ║
 ║                                                           ║
