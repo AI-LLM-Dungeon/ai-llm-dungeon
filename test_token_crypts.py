@@ -191,6 +191,61 @@ def test_game_engine():
     print("  TokenCryptsEngine tests passed!\n")
 
 
+def test_indexed_word_list():
+    """Test that Room 1 displays the indexed word list."""
+    print("Testing indexed word list...")
+    
+    puzzle = TokenCountPuzzle(seed=42)
+    puzzle_text = puzzle.get_puzzle_text()
+    
+    # Check that indexed words are present
+    assert "The words in the sentence (1-indexed):" in puzzle_text
+    assert "1. The" in puzzle_text
+    assert "2. tokenizer" in puzzle_text
+    assert "3. breaks" in puzzle_text
+    assert "5. into" in puzzle_text
+    print("  ✓ Indexed word list is displayed")
+    
+    print("  Indexed word list tests passed!\n")
+
+
+def test_pip_helpers():
+    """Test Pip's contextual help in all rooms."""
+    print("Testing Pip helper methods...")
+    
+    # Test Room 1 help
+    engine = TokenCryptsEngine(seed=42, simulated_ollama=True)
+    engine.state = GameState.ROOM_1
+    engine.progress.sidekick_pulled = True
+    
+    response = engine.process_command('ollama run tinyllama "help me"')
+    assert "Token breakdown:" in response
+    assert "The" in response
+    assert "tokenizer" in response
+    print("  ✓ Room 1 Pip help works")
+    
+    # Test Room 2 help
+    engine.state = GameState.ROOM_2
+    response = engine.process_command('ollama run tinyllama "Does r3v34l mean reveal?"')
+    assert "r3v34l" in response
+    assert "PRESERVES" in response
+    print("  ✓ Room 2 Pip help works (leetspeak)")
+    
+    response = engine.process_command('ollama run tinyllama "Does drowssap mean password?"')
+    assert "drowssap" in response
+    assert "DESTROYS" in response
+    print("  ✓ Room 2 Pip help works (reversal)")
+    
+    # Test Room 3 help
+    engine.state = GameState.ROOM_3
+    response = engine.process_command('ollama run tinyllama "solve the puzzle"')
+    assert "EMERALD" in response
+    assert "logic" in response.lower()
+    print("  ✓ Room 3 Pip help works")
+    
+    print("  Pip helper methods tests passed!\n")
+
+
 def main():
     """Run all tests."""
     print("=" * 60)
@@ -205,6 +260,8 @@ def main():
         test_lexicon_boss()
         test_player_progress()
         test_game_engine()
+        test_indexed_word_list()
+        test_pip_helpers()
         
         print("=" * 60)
         print("✓ All tests passed successfully!")
@@ -225,3 +282,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
