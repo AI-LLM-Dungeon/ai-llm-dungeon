@@ -2,7 +2,6 @@
 
 import json
 import os
-import random
 import time
 from typing import Dict, Optional, List
 from .player import Player

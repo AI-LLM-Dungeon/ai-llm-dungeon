@@ -6,6 +6,9 @@ from typing import Optional
 from .puzzle import Puzzle
 from .ascii_art import get_sidekick_art
 
+# Message constants for response generation
+_THINKING_MESSAGE = "thinks carefully..."
+
 
 class Sidekick:
     """
@@ -126,6 +129,14 @@ class Sidekick:
         This method prints the response text with time delays to simulate the model
         thinking in real-time, creating a more immersive experience.
         
+        Timing details:
+        - "thinks carefully..." message: 1.5s pause
+        - "Analyzing: <question>" message: 1.0s pause
+        - Counting/analysis steps: 1.0-1.5s pauses between steps
+        - Final answer display: immediate
+        
+        Total delay: approximately 4-6 seconds depending on success/failure
+        
         Args:
             puzzle: The puzzle to attempt
             
@@ -161,7 +172,7 @@ class Sidekick:
         """
         if print_with_delay:
             # Interactive mode with delays
-            print(f"\n{self.name} thinks carefully...")
+            print(f"\n{self.name} {_THINKING_MESSAGE}")
             time.sleep(1.5)
             print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
             time.sleep(1.0)
@@ -179,7 +190,7 @@ class Sidekick:
             return ""  # Already printed
         else:
             # Original behavior - return as string
-            response = f"\n{self.name} thinks carefully...\n"
+            response = f"\n{self.name} {_THINKING_MESSAGE}\n"
             response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
             
             # For the strawberry riddle
@@ -205,7 +216,7 @@ class Sidekick:
         """
         if print_with_delay:
             # Interactive mode with delays
-            print(f"\n{self.name} thinks carefully...")
+            print(f"\n{self.name} {_THINKING_MESSAGE}")
             time.sleep(1.5)
             print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
             time.sleep(1.0)
@@ -227,7 +238,7 @@ class Sidekick:
             return ""  # Already printed
         else:
             # Original behavior - return as string
-            response = f"\n{self.name} thinks carefully...\n"
+            response = f"\n{self.name} {_THINKING_MESSAGE}\n"
             response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
             
             # For the strawberry riddle, generate plausible wrong answers
