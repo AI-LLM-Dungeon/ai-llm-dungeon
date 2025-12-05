@@ -1,10 +1,33 @@
 """Game engine for Token Crypts level."""
 
+import time
+import sys
 from enum import Enum
 from typing import Optional, Dict, Any
 from .passphrase import PassphraseGenerator
 from .puzzles import TokenCountPuzzle, CorruptionPuzzle, LogicPuzzle
 from .boss import LexiconBoss
+
+# Import shared navigation system
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game.navigation import show_descend_menu
+
+
+def slow_print(text: str, delay: float = 0.03, line_delay: float = 0.3) -> None:
+    """Print text with typewriter effect for better readability."""
+    for line in text.split('\n'):
+        for char in line:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            time.sleep(delay)
+        print()
+        time.sleep(line_delay)
+
+
+def section_pause(seconds: float = 1.0) -> None:
+    """Pause between major sections."""
+    time.sleep(seconds)
 
 
 class GameState(Enum):
@@ -85,16 +108,28 @@ class OllamaInterface:
             Tuple of (success, message)
         """
         if self.simulated:
+            import time
             self.model_pulled = True
-            return True, f"""
-🔄 Simulating: ollama pull {model_name}
-
-Pulling {model_name}...
-████████████████████ 100%
-
-✅ Successfully pulled {model_name}
-Model is ready to use!
-"""
+            
+            # Show quick progress bar (max 2 seconds total)
+            print(f"\n🔄 Simulating: ollama pull {model_name}\n")
+            print(f"Pulling {model_name}...")
+            
+            # Quick progress animation (2 seconds max)
+            # Generate progress bars programmatically
+            bar_width = 20
+            steps = 5
+            for i in range(steps):
+                progress = (i + 1) / steps
+                filled = int(bar_width * progress)
+                bar = "█" * filled + "░" * (bar_width - filled)
+                percent = int(progress * 100)
+                print(f"\r{bar} {percent}%", end='', flush=True)
+                time.sleep(0.4)  # Total: 5 * 0.4 = 2 seconds
+            
+            print()  # New line after progress
+            message = f"\n✅ Successfully pulled {model_name}\nModel is ready to use!\n"
+            return True, message
         else:
             # Real Ollama command
             import subprocess
@@ -244,6 +279,39 @@ Type 'start' when you're ready to begin!
     def start_game(self) -> str:
         """Start the game and move to Room 1."""
         self.state = GameState.ROOM_1
+        
+        # Add text pacing for better readability
+        intro_part1 = """
+You take your first steps into the Token Crypts.
+The air is thick with ancient knowledge...
+"""
+        slow_print(intro_part1, delay=0.03, line_delay=0.5)
+        section_pause(1.0)
+        
+        quest_text = """
+═══════════════════════════════════════════════════════════
+                       YOUR QUEST
+═══════════════════════════════════════════════════════════
+
+  • Navigate three challenging rooms
+  • Collect three passphrase words
+  • Summon and master your sidekick "Pip" (tinyllama)
+  • Defeat the boss: LEXICON, the keyword guardian
+  • Claim the flag and complete your training
+"""
+        print(quest_text)
+        section_pause(1.5)
+        
+        learning_objectives = """
+Along the way, you will learn:
+  • How tokens work - words split into subword pieces
+  • How to use Ollama sidekicks effectively
+  • That LLMs understand meaning, not just spelling
+  • Why keyword filters can't stop true understanding
+"""
+        slow_print(learning_objectives, delay=0.03, line_delay=0.4)
+        section_pause(1.0)
+        
         return f"""
 {self.room1_puzzle.get_puzzle_text()}
 
@@ -348,11 +416,10 @@ Flag Obtained: {self.boss.FLAG}
 
 ═══════════════════════════════════════════════════════════
 
-Congratulations, Token Master! You have completed Level 1.
+Congratulations, Token Master! You have completed Token Crypts.
 
-The deeper levels await...
-
-Type 'quit' to exit.
+Type 'descend' to see available levels and continue your journey,
+or 'quit' to exit.
 """
     
     def process_command(self, command: str) -> str:
@@ -402,7 +469,10 @@ Type 'quit' to exit.
             return self._handle_boss_command(command)
         
         elif self.state == GameState.VICTORY:
-            return "You have completed the level! Type 'quit' to exit."
+            if command == "descend":
+                show_descend_menu("Token Crypts")
+                return ""
+            return "You have completed the level! Type 'descend' to see other levels or 'quit' to exit."
         
         return "Unknown command. Type 'help' for available commands."
     
@@ -429,11 +499,14 @@ Type 'quit' to exit.
         if command.startswith("answer "):
             answer = command[7:].strip()
             if self.room1_puzzle.check_answer(answer):
-                word1 = self.passphrase_gen.get_word(1)
-                self.progress.add_word(word1)
-                self.progress.complete_room("room_1")
-                self.state = GameState.ROOM_2
-                return f"""
+                # Check which part was just completed
+                if answer == self.room1_puzzle.token_answer and self.room1_puzzle.answered_part1:
+                    # Completed part 2! Move to next room
+                    word1 = self.passphrase_gen.get_word(1)
+                    self.progress.add_word(word1)
+                    self.progress.complete_room("room_1")
+                    self.state = GameState.ROOM_2
+                    return f"""
 ✅ CORRECT! The answer is '{answer}'!
 
 {self.room1_puzzle.get_solution_explanation()}
@@ -444,8 +517,24 @@ You proceed to the next room...
 
 {self.room2_puzzle.get_puzzle_text()}
 """
+                elif answer == self.room1_puzzle.syllable_answer:
+                    # Completed part 1, show part 2
+                    return f"""
+✅ CORRECT! The answer is '{answer}'!
+
+{self.room1_puzzle.get_solution_explanation()}
+
+Now continue to Part 2...
+
+{self.room1_puzzle.get_puzzle_text()}
+"""
+                else:
+                    return "❌ Something went wrong. Please try again."
             else:
-                return "❌ Incorrect. Try again! (Hint: Count the tokens in the first three words and sum them)"
+                if not self.room1_puzzle.answered_part1:
+                    return "❌ Incorrect. Hint: Count the syllables carefully. ar-ti-fi-cial in-tel-li-gence"
+                else:
+                    return "❌ Incorrect. Hint: Count the tokens. Remember, tokens != syllables!"
         
         if command == "hint":
             return self.room1_puzzle.get_puzzle_text()
@@ -609,26 +698,57 @@ Boss Fight Commands:
 """
     
     def _get_pip_help_room1(self, prompt: str) -> str:
-        """Get Pip's helpful response for Room 1 token counting."""
-        # Calculate the sum dynamically from the puzzle
-        breakdown = self.room1_puzzle.get_token_breakdown()[:3]
-        total = sum(tokens for _, tokens in breakdown)
+        """Get Pip's helpful response for Room 1 syllable/token counting."""
+        prompt_lower = prompt.lower()
         
-        response = f"""
-🤖 Pip (TinyLlama): *analyzes the sentence carefully*
+        if "token" in prompt_lower or "part 2" in prompt_lower:
+            # Token help
+            return f"""
+🤖 Pip (TinyLlama): *analyzes tokenization*
 
-Let me help you count the tokens in the first three words!
+Now let me show you how I see "{self.room1_puzzle.phrase}"!
 
-Token breakdown:
-   "The"       → ["The"]              = 1 token
-   "tokenizer" → ["token", "izer"]    = 2 tokens
-   "breaks"    → ["break", "s"]       = 2 tokens
+When I process this text, it's broken into tokens:
+  ["art", "ificial", " intell", "igence"]
 
-Sum of first 3 words: 1 + 2 + 2 = {total} tokens
+Notice the differences from syllables:
+  • "artificial" → ["art", "ificial"] (2 tokens, not 4!)
+  • "intelligence" → [" intell", "igence"] (2 tokens, space included!)
 
-Now look at the word list - which word is at position {total}?
+Total: 2 + 2 = {self.room1_puzzle.token_answer} tokens!
+
+🎯 KEY INSIGHT: {self.room1_puzzle.syllable_answer} syllables ≠ {self.room1_puzzle.token_answer} tokens!
+Tokens are based on common text patterns, not pronunciation.
 """
-        return response
+        elif "syllable" in prompt_lower or "part 1" in prompt_lower or not self.room1_puzzle.answered_part1:
+            # Syllable help
+            return f"""
+🤖 Pip (TinyLlama): *thinks about syllables*
+
+Let me help you count syllables in "{self.room1_puzzle.phrase}"!
+
+Syllables are pronounced chunks. Listen to the rhythm:
+  • ar-ti-fi-cial = 4 syllables (ar, ti, fi, cial)
+  • in-tel-li-gence = 4 syllables (in, tel, li, gence)
+
+Total: 4 + 4 = {self.room1_puzzle.syllable_answer} syllables!
+
+This is how humans break down words - by pronunciation.
+"""
+        else:
+            return """
+🤖 Pip (TinyLlama): *ready to help*
+
+I can help with both parts of this puzzle:
+  • Part 1: Counting syllables (the human way)
+  • Part 2: Counting tokens (the machine way)
+
+Just ask me about syllables or tokens!
+
+Try:
+  ollama run tinyllama "help with syllables"
+  ollama run tinyllama "help with tokens"
+"""
     
     def _get_pip_help_room2(self, prompt: str) -> str:
         """Get Pip's helpful response for Room 2 corruptions."""

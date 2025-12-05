@@ -6,9 +6,12 @@ from typing import List, Tuple, Dict
 
 class TokenCountPuzzle:
     """
-    Room 1 puzzle: Count tokens in a sentence and find the word at that position.
+    Room 1 puzzle: Syllable Sanctuary - Teaching the connection between syllables and tokens.
     
-    Teaches basic token counting and how words break into subword pieces.
+    This puzzle teaches:
+    1. How to count syllables (like humans do)
+    2. How to count tokens (like LLMs do)
+    3. That tokens != syllables (the key insight!)
     """
     
     def __init__(self, seed: int = None):
@@ -21,59 +24,81 @@ class TokenCountPuzzle:
         if seed is not None:
             random.seed(seed)
         
-        self.sentence = "The tokenizer breaks words into smaller pieces"
-        self.words = self.sentence.split()
-        # Sum of first 3 words: 1 (The) + 2 (tokenizer) + 2 (breaks) = 5
-        # Word at position 5 (1-indexed) is "into"
-        self.answer_position = 5
-        self.answer_word = self.words[self.answer_position - 1]  # "into"
+        # The teaching phrase
+        self.phrase = "artificial intelligence"
+        
+        # Two-part puzzle answers
+        # NOTE: These are intentionally hardcoded for this specific educational example.
+        # The phrase "artificial intelligence" was specifically chosen because:
+        # - It has exactly 8 syllables (ar-ti-fi-cial in-tel-li-gence)
+        # - It tokenizes to exactly 4 tokens (["art", "ificial", " intell", "igence"])
+        # - The 8 vs 4 difference clearly demonstrates that tokens ≠ syllables
+        # If you change the phrase, you MUST update these answers accordingly.
+        self.syllable_answer = "8"  # ar-ti-fi-cial (4) + in-tel-li-gence (4) = 8 syllables
+        self.token_answer = "4"     # ["art", "ificial", " intell", "igence"] = 4 tokens
+        
+        # Track which part the player is on
+        self.answered_part1 = False
     
     def get_puzzle_text(self) -> str:
         """Get the puzzle description."""
-        # Create the indexed word list
-        indexed_words = "\n".join([f"   {i+1}. {word}" for i, word in enumerate(self.words)])
-        
-        return f"""
+        if not self.answered_part1:
+            return f"""
 ═══════════════════════════════════════════════════════════
-                   SYLLABLE SANCTUARY
+                    SYLLABLE SANCTUARY
 ═══════════════════════════════════════════════════════════
 
-You enter a chamber filled with floating words. Each word shimmers
-with internal structure - you can see how they're made of smaller pieces.
+You enter a chamber where words float in the air, shimmering
+with both human and machine understanding. An ancient inscription
+glows on the wall:
 
-A glowing inscription reads:
+  "To understand how machines see language, first understand
+   how YOU see language. Syllables are to humans what tokens
+   are to machines - both are ways of breaking words into pieces."
 
-  "Count the tokens in this sacred text:
-   '{self.sentence}'
-   
-   Sum the tokens of the first three words.
-   Find the word at that position (1-indexed).
-   Speak the word to unlock the first seal."
+The puzzle consists of TWO parts. You must solve them in order.
 
-The words in the sentence (1-indexed):
-{indexed_words}
+╔═══════════════════════════════════════════════════════════╗
+║  PART 1: Count Syllables (The Human Way)                  ║
+╚═══════════════════════════════════════════════════════════╝
 
-💡 HINT: Tokens are subword pieces. For example:
-   - "the" → ["the"] = 1 token
-   - "tokenizer" → ["token", "izer"] = 2 tokens
-   - "breaks" → ["break", "s"] = 2 tokens
+Count the syllables in: "{self.phrase}"
 
-You can use your sidekick Pip (tinyllama) to help count tokens!
+💡 HINT: Break it into syllables like this:
+   ar-ti-fi-cial in-tel-li-gence
+
+How many syllables total? Type: answer <number>
+
+(After Part 1, you'll count tokens in the SAME phrase!)
 """
-    
-    def get_token_breakdown(self) -> List[Tuple[str, int]]:
-        """Get the token breakdown for the first few words."""
-        # Simplified token breakdown for educational purposes
-        breakdowns = [
-            ("The", 1),      # Simple word
-            ("tokenizer", 2), # token + izer
-            ("breaks", 2),    # break + s
-            ("words", 1),     # Single token
-            ("into", 1),      # Single token
-            ("smaller", 2),   # small + er
-            ("pieces", 2)     # piece + s
-        ]
-        return breakdowns[:len(self.words)]
+        else:
+            return f"""
+═══════════════════════════════════════════════════════════
+                    SYLLABLE SANCTUARY
+═══════════════════════════════════════════════════════════
+
+✅ Part 1 Complete! You counted {self.syllable_answer} syllables.
+
+╔═══════════════════════════════════════════════════════════╗
+║  PART 2: Count Tokens (The Machine Way)                   ║
+╚═══════════════════════════════════════════════════════════╝
+
+Now count the TOKENS in the SAME phrase: "{self.phrase}"
+
+💡 KEY INSIGHT: Tokens are how LLMs break text. They DON'T match syllables!
+
+Example tokenization of "{self.phrase}":
+   ["art", "ificial", " intell", "igence"]
+
+Notice:
+  • "art" + "ificial" = "artificial" (split differently than syllables!)
+  • Space before "intell" is part of the token
+  • Tokens are based on common patterns, not pronunciation
+
+How many tokens? Type: answer <number>
+
+You can ask Pip for help with either part!
+"""
     
     def check_answer(self, answer: str) -> bool:
         """
@@ -85,28 +110,58 @@ You can use your sidekick Pip (tinyllama) to help count tokens!
         Returns:
             True if correct, False otherwise
         """
-        return answer.strip().lower() == self.answer_word.lower()
+        answer = answer.strip()
+        
+        if not self.answered_part1:
+            # Check Part 1 (syllables)
+            if answer == self.syllable_answer:
+                self.answered_part1 = True
+                self._last_correct_answer = "syllables"
+                return True
+            return False
+        else:
+            # Check Part 2 (tokens)
+            if answer == self.token_answer:
+                self._last_correct_answer = "tokens"
+                return True
+            return False
     
     def get_solution_explanation(self) -> str:
-        """Get the solution explanation."""
-        return f"""
-✅ SOLUTION:
-   Token breakdown:
-   - "The" = 1 token
-   - "tokenizer" = 2 tokens (token + izer)
-   - "breaks" = 2 tokens (break + s)
+        """Get the solution explanation for the last correct answer."""
+        # Check what was just answered
+        if hasattr(self, '_last_correct_answer') and self._last_correct_answer == "tokens":
+            return f"""
+✅ PART 2 SOLUTION: {self.token_answer} tokens
+
+Token breakdown:
+  ["art", "ificial", " intell", "igence"]
+  
+  • Token 1: "art"
+  • Token 2: "ificial"
+  • Token 3: " intell" (includes the space!)
+  • Token 4: "igence"
+  • Total: 4 tokens
+
+🎯 THE KEY LESSON:
+   8 syllables ≠ 4 tokens!
    
-   Sum of first 3 words: 1 + 2 + 2 = 5 tokens
-   
-   Word at position 5 (1-indexed) in the sentence:
-   1. The
-   2. tokenizer
-   3. breaks
-   4. words
-   5. into  ← This is the answer!
-   
-   Correct answer: "into"
+   Tokens are based on statistical patterns in text, not pronunciation.
+   This is why LLMs sometimes struggle with tasks that require counting
+   letters or syllables - they don't "see" words the way you do!
 """
+        else:
+            # Part 1 solution
+            return f"""
+✅ PART 1 SOLUTION: {self.syllable_answer} syllables
+
+Syllable breakdown:
+  • ar-ti-fi-cial = 4 syllables
+  • in-tel-li-gence = 4 syllables
+  • Total: 4 + 4 = 8 syllables
+
+Great! Now you understand the human way of breaking words.
+"""
+
 
 
 class CorruptionPuzzle:
