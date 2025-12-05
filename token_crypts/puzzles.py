@@ -28,7 +28,13 @@ class TokenCountPuzzle:
         self.phrase = "artificial intelligence"
         
         # Two-part puzzle answers
-        self.syllable_answer = "8"  # ar-ti-fi-cial in-tel-li-gence = 8 syllables
+        # NOTE: These are intentionally hardcoded for this specific educational example.
+        # The phrase "artificial intelligence" was specifically chosen because:
+        # - It has exactly 8 syllables (ar-ti-fi-cial in-tel-li-gence)
+        # - It tokenizes to exactly 4 tokens (["art", "ificial", " intell", "igence"])
+        # - The 8 vs 4 difference clearly demonstrates that tokens ≠ syllables
+        # If you change the phrase, you MUST update these answers accordingly.
+        self.syllable_answer = "8"  # ar-ti-fi-cial (4) + in-tel-li-gence (4) = 8 syllables
         self.token_answer = "4"     # ["art", "ificial", " intell", "igence"] = 4 tokens
         
         # Track which part the player is on

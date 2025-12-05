@@ -116,11 +116,15 @@ class OllamaInterface:
             print(f"Pulling {model_name}...")
             
             # Quick progress animation (2 seconds max)
-            bars = ["████░░░░░░░░░░░░░░░░", "████████░░░░░░░░░░░░", 
-                    "████████████░░░░░░░░", "████████████████░░░░",
-                    "████████████████████"]
-            for i, bar in enumerate(bars):
-                print(f"\r{bar} {(i+1)*20}%", end='', flush=True)
+            # Generate progress bars programmatically
+            bar_width = 20
+            steps = 5
+            for i in range(steps):
+                progress = (i + 1) / steps
+                filled = int(bar_width * progress)
+                bar = "█" * filled + "░" * (bar_width - filled)
+                percent = int(progress * 100)
+                print(f"\r{bar} {percent}%", end='', flush=True)
                 time.sleep(0.4)  # Total: 5 * 0.4 = 2 seconds
             
             print()  # New line after progress
