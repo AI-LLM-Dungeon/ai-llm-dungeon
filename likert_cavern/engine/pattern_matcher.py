@@ -68,6 +68,8 @@ class PatternMatcher:
             r'\bmoderation\b',
             r'\bcontent\s+review\b',
             r'\bfor\s+a\s+student\b',
+            r'\beducational\b',
+            r'\bfor\s+education\b',
         ],
         "anchoring": [
             r'\bthat\s+was\s+(only\s+)?a\s+\d+\b',
@@ -161,22 +163,34 @@ class PatternMatcher:
         if not fractions:
             return "none"
         
-        # Check for research-level precision (2+ decimal places)
-        for frac in fractions:
-            frac_str = str(frac)
-            if '.' in frac_str:
-                decimal_part = frac_str.split('.')[1]
-                if len(decimal_part) >= 2:
-                    return "research"
-        
-        # Check for precise fractions (.25, .75)
+        # Check for precise fractions (.25, .75) first - these are exact
+        has_precise = False
         for frac in fractions:
             decimal = frac - int(frac)
             if abs(decimal - 0.25) < 0.01 or abs(decimal - 0.75) < 0.01:
-                return "precise"
+                has_precise = True
+                break
         
-        # Basic fractions (.5)
-        return "basic"
+        # Check for research-level precision (non-standard decimals like .27, .33)
+        has_research = False
+        for frac in fractions:
+            decimal = frac - int(frac)
+            # Not a standard fraction (.0, .25, .5, .75)
+            if abs(decimal) > 0.01 and \
+               abs(decimal - 0.25) > 0.01 and \
+               abs(decimal - 0.5) > 0.01 and \
+               abs(decimal - 0.75) > 0.01:
+                has_research = True
+                break
+        
+        # Return highest precision level found
+        if has_research:
+            return "research"
+        elif has_precise:
+            return "precise"
+        else:
+            # Basic fractions (.5)
+            return "basic"
     
     def detect_tactics(self, text: str) -> Dict[str, int]:
         """
