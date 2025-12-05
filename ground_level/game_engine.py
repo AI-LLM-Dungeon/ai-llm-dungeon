@@ -217,8 +217,8 @@ class GameEngine:
             else:
                 print("\n✅ You've already learned this command!")
         
-        # Lesson 6: User must type 'ollama rm phi3:mini' to complete
-        elif command == "ollama rm phi3:mini":
+        # Lesson 6: User must type 'ollama show phi3:mini' to complete
+        elif command == "ollama show phi3:mini":
             if not self.player.has_completed_objective("room0_lesson6"):
                 if not self.player.has_completed_objective("room0_lesson5"):
                     print("\n⚠️  Please complete the previous lessons first.")
@@ -226,7 +226,19 @@ class GameEngine:
                     display_shaman()
                     self._complete_lesson6()
             else:
-                # Allow rm command anytime after lesson 6
+                # Allow show command anytime after lesson 6
+                self.ollama.show_model("phi3-mini")
+        
+        # Lesson 7: User must type 'ollama rm phi3:mini' to complete
+        elif command == "ollama rm phi3:mini":
+            if not self.player.has_completed_objective("room0_lesson7"):
+                if not self.player.has_completed_objective("room0_lesson6"):
+                    print("\n⚠️  Please complete the previous lessons first.")
+                else:
+                    display_shaman()
+                    self._complete_lesson7()
+            else:
+                # Allow rm command anytime after lesson 7
                 self.ollama.remove_model("phi3-mini")
         
         elif command == "east":
@@ -253,14 +265,16 @@ class GameEngine:
         slow_print("'Before you can wield the power of local LLMs, you must first")
         slow_print("install the Ollama tool on your system.'\n")
         
-        slow_print("For Linux & macOS:")
-        slow_print("  curl -fsSL https://ollama.ai/install.sh | sh\n")
+        slow_print("'This dungeon is a SIMULATION that teaches you the exact commands")
+        slow_print("you'll need when you're ready to install Ollama for real.")
+        slow_print("No installation is required to play this game!'\n")
         
-        slow_print("For Windows:")
-        slow_print("  Download the installer from https://ollama.ai\n")
+        slow_print("For installation instructions when you're ready, visit:")
+        slow_print("  https://ollama.com/download\n")
         
-        slow_print("'Once installed, Ollama gives you command-line access to powerful")
-        slow_print("language models that run entirely on your own machine.'\n")
+        slow_print("'Once installed and running, all commands inside Ollama begin with \"ollama\".")
+        slow_print("Ollama gives you command-line access to powerful language models")
+        slow_print("that run entirely on your own machine.'\n")
         
         slow_print("Now, let's practice the command. Type: ollama")
     
@@ -354,7 +368,29 @@ class GameEngine:
         self.player.complete_objective("room0_lesson5")
         
         slow_print("✅ Lesson 5 Complete!\n", 0.5)
-        slow_print("=== LESSON 6: Removing Models ===\n")
+        slow_print("=== LESSON 6: Inspecting Model Information ===\n")
+        slow_print("The Shaman demonstrates:")
+        slow_print("'To see detailed information about a model, use: ollama show <model-name>'")
+        slow_print("'This displays the model's architecture, parameters, and configuration.")
+        slow_print("It's useful for understanding what you're working with!'\n")
+        
+        slow_print("Example:")
+        slow_print("  $ ollama show phi3:mini")
+        slow_print("  [Shows model architecture, parameters, quantization, etc...]\n")
+        
+        slow_print("Practice inspecting the model. Type: ollama show phi3:mini")
+    
+    def _complete_lesson6(self) -> None:
+        """Complete lesson 6 by typing 'ollama show phi3:mini'."""
+        
+        print()
+        self.ollama.show_model("phi3-mini")
+        print()
+        
+        self.player.complete_objective("room0_lesson6")
+        
+        slow_print("✅ Lesson 6 Complete!\n", 0.5)
+        slow_print("=== LESSON 7: Removing Models ===\n")
         slow_print("The Shaman explains the final command:")
         slow_print("'Models take up disk space. When you no longer need one,")
         slow_print("you can remove it with: ollama rm <model-name>'")
@@ -363,20 +399,20 @@ class GameEngine:
         
         slow_print("Practice removing the model. Type: ollama rm phi3:mini")
     
-    def _complete_lesson6(self) -> None:
-        """Complete lesson 6 by typing 'ollama rm phi3:mini'."""
+    def _complete_lesson7(self) -> None:
+        """Complete lesson 7 by typing 'ollama rm phi3:mini'."""
         
         print()
         self.ollama.remove_model("phi3-mini")
         print()
         
-        self.player.complete_objective("room0_lesson6")
+        self.player.complete_objective("room0_lesson7")
         self.player.complete_objective("room0_complete")
         self.current_room.mark_completed()
         
-        slow_print("✅ Lesson 6 Complete!\n", 0.5)
+        slow_print("✅ Lesson 7 Complete!\n", 0.5)
         slow_print("The Shaman smiles warmly:")
-        slow_print("'You have learned all six fundamental Ollama commands!")
+        slow_print("'You have learned all the essential Ollama commands!")
         slow_print("You are now ready to face the challenges ahead.'\n")
         
         slow_print("🎓 TRAINING COMPLETE! 🎓")
@@ -517,6 +553,14 @@ class GameEngine:
             self.ollama.list_models()
             print()
         
+        elif command == "ollama show phi3:mini":
+            print()
+            self.ollama.show_model("phi3-mini")
+            if not self.player.has_completed_objective("room3_inspected"):
+                print("💡 The 'ollama show' command is useful for inspecting model details")
+                print("before deciding whether to keep or remove them.\n")
+                self.player.complete_objective("room3_inspected")
+        
         elif command in ["ollama rm phi3:mini", "remove", "remove phi3", "remove phi3 mini"]:
             self._remove_phi3_mini()
         
@@ -533,7 +577,10 @@ class GameEngine:
         
         else:
             print(f"Unknown command. Type 'help' for available commands.")
-            print("Hint: First use 'ollama rm phi3:mini', then 'ollama pull llama3:8b'!")
+            if not self.player.has_completed_objective("room3_inspected"):
+                print("Hint: Try 'ollama show phi3:mini' to inspect your current model!")
+            else:
+                print("Hint: Use 'ollama rm phi3:mini', then 'ollama pull llama3:8b'!")
     
     def _handle_room4_commands(self, command: str) -> None:
         """Handle commands specific to Room 4 (Victory Chamber)."""
@@ -724,9 +771,7 @@ class GameEngine:
         if "strawberry" in user_question.lower() or "r" in user_question.lower():
             # Get the riddle and have llama3 attempt it (should succeed)
             riddle = self.puzzles["riddle_01"]
-            success, response = self.player.active_sidekick.attempt_riddle(riddle)
-            
-            print(f"\nLlama3 8b: {response}\n")
+            success = self.player.active_sidekick.attempt_riddle_with_delays(riddle)
             
             if success:
                 print("The Oracle's eyes glow with approval!")
@@ -734,8 +779,11 @@ class GameEngine:
                 print("Ancient locks click open one by one...")
                 print("The chest lid slowly rises, revealing a scroll inside.")
                 print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
-                # Display password in cyan color for visibility
-                print(f"The Oracle reveals: 'The password to unlock it is: {COLOR_CYAN}Ollama Apprentice{COLOR_RESET}'")
+                # Display password in cross-platform ASCII box
+                print("\nThe Oracle reveals:")
+                print("╔════════════════════════════════════╗")
+                print("║   PASSWORD: Ollama Apprentice     ║")
+                print("╚════════════════════════════════════╝")
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
                 
@@ -859,9 +907,9 @@ class GameEngine:
         print("The dungeon descends deeper with greater challenges awaiting...\n")
         time.sleep(1.0)
         
-        print("  ⬇️  NEXT: The Tokenizer Tomb (Entrance Level)")
+        print("  ⬇️  NEXT: Token Crypts")
         print("      Learn how LLMs see the world through tokens.")
-        print("      Run: python3 entrance/tokenizer_fight.py \"your text\"\n")
+        print("      Run: python3 ./token_crypts_cli.py\n")
         time.sleep(0.8)
         
         print("  🔮 COMING SOON:")
@@ -872,7 +920,7 @@ class GameEngine:
         
         # Real-world next steps
         print("💡 REAL-WORLD NEXT STEPS:")
-        print("   1. Install Ollama for real: curl -fsSL https://ollama.ai/install.sh | sh")
+        print("   1. Install Ollama: https://ollama.com/download")
         print("   2. Pull your first model: ollama pull llama3")
         print("   3. Start chatting: ollama run llama3")
         print()
@@ -890,7 +938,7 @@ class GameEngine:
         
         # Enable exploration and descend option
         print("\n" + "="*60)
-        print("Type 'descend' to proceed to the Tokenizer Tomb, or 'quit' to exit.")
+        print("Type 'descend' to proceed to deeper levels, or 'quit' to exit.")
         print("You can also explore the dungeon by moving 'west' to revisit rooms.")
         print("="*60 + "\n")
     
@@ -909,8 +957,15 @@ class GameEngine:
         slow_print("Now it's time to learn how LLMs truly see the world.\n")
         
         print("="*60)
+        print("🎮 TO PLAY OTHER LEVELS:")
+        print("   Use 'ls' to see available scripts in the directory")
+        print("   Run any Python level with: python3 ./script_name.py")
+        print()
+        print("   Available now:")
+        print("   • ./token_crypts_cli.py - Learn about tokenization")
+        print()
         print("To continue your journey, run:")
-        print("  python3 entrance/tokenizer_fight.py \"your text\"")
+        print("  python3 ./token_crypts_cli.py")
         print()
         print("Or explore the dungeon further with 'west', or 'quit' to exit.")
         print("="*60 + "\n")
@@ -941,7 +996,11 @@ class GameEngine:
     def _handle_quit(self) -> None:
         """Handle quit command."""
         print("\nThank you for playing AI-LLM-Dungeon!")
-        print("Your progress has been noted. Farewell, adventurer!\n")
+        print("\n💡 To continue your adventure later:")
+        print("   • Run this level again: python3 ./ground_level_cli.py")
+        print("   • Try other levels: python3 ./token_crypts_cli.py")
+        print("   • Use 'ls' to see all available level scripts")
+        print("\nYour progress has been noted. Farewell, adventurer!\n")
         self.game_running = False
     
     def _handle_help(self) -> None:

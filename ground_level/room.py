@@ -113,7 +113,7 @@ Before you stands a wise Shaman, keeper of the Ollama arts.
 The Shaman speaks: "Welcome, young apprentice! Before you venture into the 
 dungeon depths, you must first learn the sacred commands of Ollama."
 
-"I will teach you the six fundamental commands that every Ollama master must know.
+"I will teach you the essential commands that every Ollama master must know.
 Listen carefully, for these commands will be your tools in the challenges ahead."
 
 💡 Hint: Type 'learn' to begin your training with the Shaman!
@@ -125,13 +125,14 @@ Listen carefully, for these commands will be your tools in the challenges ahead.
             "Learn the 'ollama list' command",
             "Learn the 'ollama pull' command",
             "Learn the 'ollama run' command",
+            "Learn the 'ollama show' command",
             "Learn the 'ollama rm' command"
         ]
         
         super().__init__(0, "Ollama Village", description.strip(), objectives)
         self.available_directions = ["east"]  # Can go to Room 1 after training
         self.lessons_completed = 0
-        self.total_lessons = 6
+        self.total_lessons = 7
 
 
 class SummoningChamber(Room):
@@ -218,9 +219,10 @@ The forge can reshape your tools. You must first release Phi3 Mini
 to make room for a more powerful ally."
 
 On the wall, you see Ollama commands carved in stone:
-  1. Remove your current model: ollama rm phi3:mini
-  2. Pull a more powerful model: ollama pull llama3:8b
-  3. Return WEST to retry the riddle with greater strength
+  1. Inspect your current model: ollama show phi3:mini
+  2. Remove your current model: ollama rm phi3:mini
+  3. Pull a more powerful model: ollama pull llama3:8b
+  4. Return WEST to retry the riddle with greater strength
 
 The forge master awaits your command.
         """
