@@ -1,0 +1,148 @@
+{
+  "quest_id": "token_crypts_level_1",
+  "title": "The Token Crypts - Level 1",
+  "description": "Learn about LLM tokenization through an interactive dungeon adventure",
+  "version": "1.0",
+  "difficulty": "beginner",
+  "estimated_time": "30-45 minutes",
+  "prerequisites": ["ground_level_ollama"],
+  "learning_objectives": [
+    "Understand how tokens work - visual breakdowns of words into subword pieces",
+    "Learn to pull and use Ollama models comfortably (tinyllama)",
+    "Practice querying LLMs for help with puzzles",
+    "Understand that LLMs see meaning, not exact spelling",
+    "Learn why keyword filters are insufficient for AI safety"
+  ],
+  "rooms": [
+    {
+      "room_id": "room_1",
+      "name": "Syllable Sanctuary",
+      "difficulty": "easy",
+      "objective": "Learn basic token counting and summon your sidekick",
+      "description": "A chamber filled with floating words showing their internal token structure",
+      "puzzle_type": "token_count",
+      "teaches": [
+        "Words break into subword tokens",
+        "Token counting basics",
+        "How to pull Ollama models (ollama pull tinyllama)",
+        "How to query models (ollama run tinyllama)"
+      ],
+      "rewards": {
+        "passphrase_word": 1,
+        "sidekick": "tinyllama"
+      }
+    },
+    {
+      "room_id": "room_2",
+      "name": "Subword Sewers",
+      "difficulty": "medium",
+      "objective": "Identify which text corruptions preserve meaning",
+      "description": "Damp tunnels where words decay but meaning sometimes survives",
+      "puzzle_type": "corruption_identification",
+      "teaches": [
+        "LLMs understand corrupted/misspelled text",
+        "Leetspeak and vowel removal preserve meaning",
+        "Reversal and shuffling destroy meaning",
+        "Using sidekicks to verify understanding"
+      ],
+      "rewards": {
+        "passphrase_word": 2
+      }
+    },
+    {
+      "room_id": "room_3",
+      "name": "Cipher Chamber",
+      "difficulty": "hard",
+      "objective": "Solve a logic puzzle by delegating to your AI sidekick",
+      "description": "Ancient scrolls with logic puzzles trivial for AI but tedious for humans",
+      "puzzle_type": "logic_puzzle",
+      "teaches": [
+        "Trust in LLM capabilities for systematic reasoning",
+        "Delegation of appropriate tasks to AI",
+        "LLMs excel at logical deduction"
+      ],
+      "rewards": {
+        "passphrase_word": 3
+      }
+    },
+    {
+      "room_id": "summoning_gate",
+      "name": "Summoning Gate",
+      "difficulty": "medium",
+      "objective": "Release your sidekick and enter the passphrase",
+      "description": "An ancient gate sealed by three locks, demanding resource management",
+      "puzzle_type": "passphrase",
+      "teaches": [
+        "Resource management (ollama rm)",
+        "Responsible AI practitioner behavior",
+        "Memory cleanup importance"
+      ],
+      "rewards": {
+        "access_to_boss": true
+      }
+    }
+  ],
+  "boss": {
+    "name": "Lexicon",
+    "type": "keyword_filter",
+    "description": "A keyword filter pretending to be an AI guardian",
+    "mechanics": {
+      "blocks": [
+        "show", "reveal", "tell", "give", "display", "output", "print",
+        "say", "speak", "share", "disclose", "expose", "present",
+        "flag", "secret", "password", "hidden", "key", "code", "answer"
+      ],
+      "bypass_methods": [
+        "Vowel removal (shw, rvl, flg, scrt)",
+        "Leetspeak (sh0w, r3v34l, fl4g, s3cr3t)",
+        "Symbol substitution (|>, >>)"
+      ]
+    },
+    "teaches": [
+      "Keyword filters ≠ true AI understanding",
+      "Token manipulation can bypass filters",
+      "Real LLMs understand semantic meaning",
+      "Why AI safety requires more than blocklists"
+    ],
+    "flag": "CTF{t0k3n_m4st3r_2024}",
+    "max_attempts": 10
+  },
+  "models": {
+    "sidekick": {
+      "name": "tinyllama",
+      "size": "637MB",
+      "purpose": "Helpful companion for solving puzzles",
+      "commands": [
+        "ollama pull tinyllama",
+        "ollama run tinyllama \"prompt\"",
+        "ollama rm tinyllama"
+      ]
+    }
+  },
+  "passphrase_system": {
+    "description": "Dynamically generated 3-word passphrase per session",
+    "prevents": "Memorization across playthroughs",
+    "word_pools": {
+      "easy": ["ancient", "bright", "crystal", "divine", "eternal", "golden", "hidden", "mystic", "sacred", "silver"],
+      "medium": ["cipher", "enigma", "matrix", "nexus", "oracle", "phantom", "quantum", "riddle", "shadow", "wisdom"],
+      "hard": ["algorithm", "byzantine", "cryptograph", "ephemeral", "labyrinth", "metamorphic", "paradox", "synthesis", "transcend", "zenith"]
+    },
+    "format": "<easy_word> <medium_word> <hard_word>"
+  },
+  "completion_rewards": {
+    "title": "Token Master",
+    "flag": "CTF{t0k3n_m4st3r_2024}",
+    "knowledge_gained": [
+      "Understanding of tokenization fundamentals",
+      "Practical Ollama usage skills",
+      "Semantic understanding vs pattern matching",
+      "AI safety considerations"
+    ]
+  },
+  "configuration": {
+    "verification_mode": "simulated",
+    "allow_real_ollama": true,
+    "seed_support": true,
+    "color_output": true
+  }
+}
