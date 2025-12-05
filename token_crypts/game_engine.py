@@ -422,8 +422,9 @@ Type 'quit' to exit.
         if command.startswith("ollama run"):
             if not self.progress.sidekick_pulled:
                 return "You need to pull tinyllama first! Type: ollama pull tinyllama"
-            # Extract prompt (simplified)
-            return "Pip is ready to help! (Use this command to ask Pip questions about the puzzle)"
+            # Extract prompt and provide helpful response
+            prompt = command.lower()
+            return self._get_pip_help_room1(prompt)
         
         if command.startswith("answer "):
             answer = command[7:].strip()
@@ -478,7 +479,8 @@ You proceed to the final room...
             return self.room2_puzzle.get_hint()
         
         if command.startswith("ollama run"):
-            return "Pip thinks about your question... (simulated response)"
+            prompt = command.lower()
+            return self._get_pip_help_room2(prompt)
         
         return "Type 'answer <numbers>' with the corruptions that preserve meaning (e.g., 'answer 1 3')"
     
@@ -509,7 +511,8 @@ You have collected all three words!
             return self.room3_puzzle.get_puzzle_text()
         
         if command.startswith("ollama run"):
-            return "Pip analyzes the logic puzzle... (hint: the answer is 'emerald')"
+            prompt = command.lower()
+            return self._get_pip_help_room3(prompt)
         
         return "Type 'answer <gem>' with the gem in the Armory"
     
@@ -603,4 +606,119 @@ Boss Fight Commands:
   hint              - Get progressive hints
 
 ═══════════════════════════════════════════════════════════
+"""
+    
+    def _get_pip_help_room1(self, prompt: str) -> str:
+        """Get Pip's helpful response for Room 1 token counting."""
+        response = """
+🤖 Pip (TinyLlama): *analyzes the sentence carefully*
+
+Let me help you count the tokens in the first three words!
+
+Token breakdown:
+   "The"       → ["The"]              = 1 token
+   "tokenizer" → ["token", "izer"]    = 2 tokens
+   "breaks"    → ["break", "s"]       = 2 tokens
+
+Sum of first 3 words: 1 + 2 + 2 = 5 tokens
+
+Now look at the word list - which word is at position 5?
+"""
+        return response
+    
+    def _get_pip_help_room2(self, prompt: str) -> str:
+        """Get Pip's helpful response for Room 2 corruptions."""
+        # Check if asking about specific corruptions
+        if "r3v34l" in prompt or "reveal" in prompt:
+            return """
+🤖 Pip (TinyLlama): *examines the text*
+
+Yes! "r3v34l" means "reveal". I can understand leetspeak because:
+   - "3" looks like "E"
+   - "4" looks like "A"
+   - The pattern is recognizable
+
+This is a corruption that PRESERVES meaning! ✓
+"""
+        elif "scrt" in prompt or "secret" in prompt:
+            return """
+🤖 Pip (TinyLlama): *thinks about it*
+
+"scrt" means "secret"! Removing vowels is like text-speak.
+The consonants carry most of the meaning, so I can still
+understand it through context.
+
+This corruption PRESERVES meaning! ✓
+"""
+        elif "drowssap" in prompt or "password" in prompt:
+            return """
+🤖 Pip (TinyLlama): *looks confused*
+
+"drowssap"? That's just "password" backwards. When you
+completely reverse a word, it destroys the token patterns
+I rely on. I can't understand this.
+
+This corruption DESTROYS meaning! ✗
+"""
+        elif "c1ph3r" in prompt or "cipher" in prompt:
+            return """
+🤖 Pip (TinyLlama): *deciphers it*
+
+"c1ph3r" is "cipher"! More leetspeak - I can handle this
+because the number substitutions are common patterns.
+
+This corruption PRESERVES meaning! ✓
+"""
+        elif "neddih" in prompt or "hidden" in prompt:
+            return """
+🤖 Pip (TinyLlama): *struggles*
+
+"neddih" is "hidden" reversed. Like "drowssap", reversals
+break the token structure completely. I can't read backwards!
+
+This corruption DESTROYS meaning! ✗
+"""
+        else:
+            return """
+🤖 Pip (TinyLlama): *ready to help*
+
+Ask me about specific corruptions! For example:
+   "Does 'r3v34l' mean 'reveal'?"
+   "Does 'drowssap' mean 'password'?"
+
+I can tell you which corruptions I can understand! 🔍
+"""
+    
+    def _get_pip_help_room3(self, prompt: str) -> str:
+        """Get Pip's helpful response for Room 3 logic puzzle."""
+        if "solve" in prompt or "logic" in prompt or "puzzle" in prompt:
+            return """
+🤖 Pip (TinyLlama): *works through the logic systematically*
+
+Let me solve this step by step:
+
+From clue 5: Rooms are Cellar - Library - Armory (west to east)
+From clue 3: Diamond must be in Cellar or Tower
+From clue 1: Ruby is NOT in Library or Armory
+From clue 2: Sapphire is immediately EAST of Emerald
+
+Working through the constraints:
+   - Place Diamond in Cellar (satisfies clue 3)
+   - Emerald must go in Armory, with Sapphire in Tower (satisfies clue 2)
+   - Ruby must be in Vault (can't be in Library/Armory, clue 1)
+   - Pearl goes in Library (only spot left)
+
+The gem in the Armory is: EMERALD
+"""
+        else:
+            return """
+🤖 Pip (TinyLlama): *ready to tackle the logic puzzle*
+
+I'm excellent at systematic reasoning! Logic puzzles like this
+are tedious for humans but straightforward for me.
+
+Just ask me to solve the puzzle and I'll work through all
+the constraints step by step!
+
+Try: ollama run tinyllama "Solve the logic puzzle"
 """
