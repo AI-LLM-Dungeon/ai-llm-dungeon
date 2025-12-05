@@ -610,7 +610,17 @@ Boss Fight Commands:
     
     def _get_pip_help_room1(self, prompt: str) -> str:
         """Get Pip's helpful response for Room 1 token counting."""
-        response = """
+        # Get dynamic token breakdown from the puzzle
+        breakdown = self.room1_puzzle.get_token_breakdown()[:3]
+        token_lines = "\n".join([
+            f'   "{word}"' + ' ' * (12 - len(word)) + f'→ {["[token breakdown]"]}' + ' ' * 15 + f'= {tokens} token{"s" if tokens > 1 else ""}'
+            for word, tokens in breakdown
+        ])
+        
+        # Calculate the sum dynamically
+        total = sum(tokens for _, tokens in breakdown)
+        
+        response = f"""
 🤖 Pip (TinyLlama): *analyzes the sentence carefully*
 
 Let me help you count the tokens in the first three words!
@@ -620,9 +630,9 @@ Token breakdown:
    "tokenizer" → ["token", "izer"]    = 2 tokens
    "breaks"    → ["break", "s"]       = 2 tokens
 
-Sum of first 3 words: 1 + 2 + 2 = 5 tokens
+Sum of first 3 words: 1 + 2 + 2 = {total} tokens
 
-Now look at the word list - which word is at position 5?
+Now look at the word list - which word is at position {total}?
 """
         return response
     
@@ -692,7 +702,8 @@ I can tell you which corruptions I can understand! 🔍
     def _get_pip_help_room3(self, prompt: str) -> str:
         """Get Pip's helpful response for Room 3 logic puzzle."""
         if "solve" in prompt or "logic" in prompt or "puzzle" in prompt:
-            return """
+            answer = self.room3_puzzle.answer.upper()
+            return f"""
 🤖 Pip (TinyLlama): *works through the logic systematically*
 
 Let me solve this step by step:
@@ -708,7 +719,7 @@ Working through the constraints:
    - Ruby must be in Vault (can't be in Library/Armory, clue 1)
    - Pearl goes in Library (only spot left)
 
-The gem in the Armory is: EMERALD
+The gem in the Armory is: {answer}
 """
         else:
             return """

@@ -1,6 +1,7 @@
 """Command-line interface for Token Crypts level."""
 
 import sys
+import time
 from typing import Optional
 from .game_engine import TokenCryptsEngine, GameState
 
@@ -45,7 +46,6 @@ class TokenCryptsCLI:
             print(text)
             return
         
-        import time
         for char in text:
             print(char, end='', flush=True)
             time.sleep(delay)
@@ -71,7 +71,6 @@ class TokenCryptsCLI:
                 print(section_delimiter, end='', flush=True)
                 # For longer sections, add a brief pause
                 if len(section) > 200:
-                    import time
                     time.sleep(0.5)
         print()  # Final newline
     
