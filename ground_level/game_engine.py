@@ -11,6 +11,11 @@ from .room import Room, create_room
 from .ollama_simulator import OllamaSimulator
 from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print, display_certificate, display_descend
 
+# Import shared navigation system
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from game.navigation import show_descend_menu
+
 # ANSI color codes for terminal output
 COLOR_CYAN = '\033[96m'
 COLOR_RESET = '\033[0m'
@@ -943,7 +948,7 @@ class GameEngine:
         print("="*60 + "\n")
     
     def _handle_descend(self) -> None:
-        """Handle the descend command to transition to the Tokenizer Tomb."""
+        """Handle the descend command to transition to deeper levels."""
         print()
         display_descend()
         print()
@@ -951,24 +956,13 @@ class GameEngine:
         slow_print("You approach the ancient stone staircase at the back of the Victory Chamber.")
         slow_print("The air grows cooler as you peer into the darkness below...")
         slow_print("Carved into the archway above the stairs, you read:")
-        slow_print("  'The Tokenizer Tomb - Where words become numbers'\n")
+        slow_print("  'Deeper knowledge awaits those who dare to descend'\n")
         
         slow_print("You've mastered the fundamentals of Ollama.")
         slow_print("Now it's time to learn how LLMs truly see the world.\n")
         
-        print("="*60)
-        print("🎮 TO PLAY OTHER LEVELS:")
-        print("   Use 'ls' to see available scripts in the directory")
-        print("   Run any Python level with: python3 ./script_name.py")
-        print()
-        print("   Available now:")
-        print("   • ./token_crypts_cli.py - Learn about tokenization")
-        print()
-        print("To continue your journey, run:")
-        print("  python3 ./token_crypts_cli.py")
-        print()
-        print("Or explore the dungeon further with 'west', or 'quit' to exit.")
-        print("="*60 + "\n")
+        # Use the shared navigation system
+        show_descend_menu("Ground Level (Ollama Village)")
     
     def _move_to_room(self, room_id: int) -> None:
         """

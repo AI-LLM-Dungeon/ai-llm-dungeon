@@ -20,6 +20,50 @@ No Ollama installed? No problem—use simulated mode to learn the commands first
 
 ---
 
+## 🔄 Updating AI-LLM-Dungeon
+
+**Already have the repo?** Here's how to get the latest levels and improvements:
+
+### Quick Update
+```bash
+git pull origin main
+```
+
+### Fresh Install (if you made local changes)
+```bash
+# Save your progress if needed
+git stash
+
+# Get latest updates
+git pull origin main
+
+# Or start fresh
+cd ..
+rm -rf ai-llm-dungeon
+git clone https://github.com/AI-LLM-Dungeon/ai-llm-dungeon.git
+cd ai-llm-dungeon
+```
+
+### Discover New Levels
+```bash
+# List all playable levels (look for *_cli.py files)
+ls *_cli.py
+
+# Run any level
+python3 ./ground_level_cli.py
+python3 ./token_crypts_cli.py
+```
+
+### What Gets Updated vs. Preserved
+- ✅ **Updated**: Game code, new levels, bug fixes, documentation
+- ✅ **Preserved**: Your downloaded Ollama models (stored separately by Ollama)
+- ✅ **Preserved**: Game data files (passphrase seeds, etc.)
+
+### 💡 Pro Tip
+⭐ Star this repo on GitHub to get notified about new levels and features!
+
+---
+
 ## 🗺️ The Dungeon Map
 
 AI-LLM-Dungeon is structured as a **10-tier descent into knowledge**:
