@@ -71,6 +71,24 @@ class Sidekick:
         message += f"Memory freed: {self.memory} GB\n"
         return message
     
+    def _calculate_success(self) -> bool:
+        """
+        Calculate whether this sidekick succeeds based on memory size.
+        
+        Returns:
+            True if the attempt succeeds, False otherwise
+        """
+        # Calculate success probability based on memory size
+        if self.memory <= 2:
+            success_rate = 0.20  # Phi3 Mini struggles with counting
+        elif self.memory <= 5:
+            success_rate = 0.50  # Qwen Lite is better but not perfect
+        else:
+            success_rate = 0.95  # Llama3 8b is highly capable
+        
+        # Simulate the LLM's attempt
+        return random.random() < success_rate
+    
     def attempt_riddle(self, puzzle: Puzzle) -> tuple[bool, str]:
         """
         Attempt to solve a puzzle based on this sidekick's capabilities.
@@ -90,16 +108,8 @@ class Sidekick:
         if not self.active:
             return False, f"Error: {self.name} is not active. Please summon them first."
         
-        # Calculate success probability based on memory size
-        if self.memory <= 2:
-            success_rate = 0.20  # Phi3 Mini struggles with counting
-        elif self.memory <= 5:
-            success_rate = 0.50  # Qwen Lite is better but not perfect
-        else:
-            success_rate = 0.95  # Llama3 8b is highly capable
-        
         # Simulate the LLM's attempt
-        success = random.random() < success_rate
+        success = self._calculate_success()
         
         # Generate response based on outcome
         if success:
@@ -115,9 +125,11 @@ class Sidekick:
         Args:
             puzzle: The puzzle to respond to
             print_with_delay: If True, prints text with delays for interactive feel
+                             and returns empty string. If False, returns formatted
+                             response string without printing.
         
         Returns:
-            The response text (only if print_with_delay is False)
+            Response text if print_with_delay is False, empty string otherwise
         """
         if print_with_delay:
             # Interactive mode with delays
@@ -157,9 +169,11 @@ class Sidekick:
         Args:
             puzzle: The puzzle to respond to
             print_with_delay: If True, prints text with delays for interactive feel
+                             and returns empty string. If False, returns formatted
+                             response string without printing.
         
         Returns:
-            The response text (only if print_with_delay is False)
+            Response text if print_with_delay is False, empty string otherwise
         """
         if print_with_delay:
             # Interactive mode with delays

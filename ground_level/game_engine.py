@@ -3,6 +3,7 @@
 import json
 import os
 import random
+import time
 from typing import Dict, Optional, List
 from .player import Player
 from .sidekick import Sidekick
@@ -661,8 +662,8 @@ class GameEngine:
             # Get the riddle and have phi3 attempt it
             riddle = self.puzzles["riddle_01"]
             
-            # Generate success or failure (using the sidekick's attempt logic)
-            success = random.random() < 0.20  # 20% success rate for Phi3 Mini
+            # Use the sidekick's success calculation
+            success = self.player.active_sidekick._calculate_success()
             
             # Print with delays for interactive experience
             if success:
@@ -827,8 +828,6 @@ class GameEngine:
     
     def _unlock_victory(self) -> None:
         """Handle password entry to unlock the Victory Chamber."""
-        import time
-        
         print("\n🔓 Password accepted!")
         print("The ancient lock glows brightly and the chamber doors swing open!")
         print("\nYou step inside the Victory Chamber...")
