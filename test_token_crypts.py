@@ -54,19 +54,27 @@ def test_token_count_puzzle():
     puzzle = TokenCountPuzzle(seed=42)
     
     # Test puzzle generation
-    assert puzzle.sentence is not None
-    assert len(puzzle.words) > 0
-    print(f"  ✓ Puzzle sentence: {puzzle.sentence}")
+    assert puzzle.phrase is not None
+    assert puzzle.syllable_answer == "8"
+    assert puzzle.token_answer == "4"
+    print(f"  ✓ Puzzle phrase: {puzzle.phrase}")
     
-    # Test answer checking
-    assert puzzle.check_answer(puzzle.answer_word)
-    assert not puzzle.check_answer("wronganswer")
-    print(f"  ✓ Answer checking works (correct answer: {puzzle.answer_word})")
+    # Test part 1 (syllables)
+    assert not puzzle.answered_part1
+    assert puzzle.check_answer("8")
+    assert puzzle.answered_part1
+    print(f"  ✓ Part 1 answer checking works (syllables: 8)")
     
-    # Test token breakdown
-    breakdown = puzzle.get_token_breakdown()
-    assert len(breakdown) > 0
-    print(f"  ✓ Token breakdown generated")
+    # Test part 2 (tokens)
+    assert puzzle.check_answer("4")
+    print(f"  ✓ Part 2 answer checking works (tokens: 4)")
+    
+    # Test wrong answers
+    puzzle2 = TokenCountPuzzle(seed=42)
+    assert not puzzle2.check_answer("5")  # Wrong syllable count
+    puzzle2.answered_part1 = True
+    assert not puzzle2.check_answer("5")  # Wrong token count
+    print(f"  ✓ Wrong answers rejected correctly")
     
     print("  TokenCountPuzzle tests passed!\n")
 

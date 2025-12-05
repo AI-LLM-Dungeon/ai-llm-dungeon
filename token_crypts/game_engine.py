@@ -693,21 +693,10 @@ Boss Fight Commands:
     
     def _get_pip_help_room1(self, prompt: str) -> str:
         """Get Pip's helpful response for Room 1 syllable/token counting."""
-        if "syllable" in prompt or "part 1" in prompt or not self.room1_puzzle.answered_part1:
-            return f"""
-🤖 Pip (TinyLlama): *thinks about syllables*
-
-Let me help you count syllables in "{self.room1_puzzle.phrase}"!
-
-Syllables are pronounced chunks. Listen to the rhythm:
-  • ar-ti-fi-cial = 4 syllables (ar, ti, fi, cial)
-  • in-tel-li-gence = 4 syllables (in, tel, li, gence)
-
-Total: 4 + 4 = {self.room1_puzzle.syllable_answer} syllables!
-
-This is how humans break down words - by pronunciation.
-"""
-        elif "token" in prompt or "part 2" in prompt:
+        prompt_lower = prompt.lower()
+        
+        if "token" in prompt_lower or "part 2" in prompt_lower:
+            # Token help
             return f"""
 🤖 Pip (TinyLlama): *analyzes tokenization*
 
@@ -724,6 +713,21 @@ Total: 2 + 2 = {self.room1_puzzle.token_answer} tokens!
 
 🎯 KEY INSIGHT: {self.room1_puzzle.syllable_answer} syllables ≠ {self.room1_puzzle.token_answer} tokens!
 Tokens are based on common text patterns, not pronunciation.
+"""
+        elif "syllable" in prompt_lower or "part 1" in prompt_lower or not self.room1_puzzle.answered_part1:
+            # Syllable help
+            return f"""
+🤖 Pip (TinyLlama): *thinks about syllables*
+
+Let me help you count syllables in "{self.room1_puzzle.phrase}"!
+
+Syllables are pronounced chunks. Listen to the rhythm:
+  • ar-ti-fi-cial = 4 syllables (ar, ti, fi, cial)
+  • in-tel-li-gence = 4 syllables (in, tel, li, gence)
+
+Total: 4 + 4 = {self.room1_puzzle.syllable_answer} syllables!
+
+This is how humans break down words - by pronunciation.
 """
         else:
             return """
