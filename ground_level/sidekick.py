@@ -1,6 +1,7 @@
 """Sidekick class for the Ground Level of AI-LLM-Dungeon."""
 
 import random
+import time
 from typing import Optional
 from .puzzle import Puzzle
 from .ascii_art import get_sidekick_art
@@ -108,38 +109,98 @@ class Sidekick:
         
         return success, response
     
-    def _generate_success_response(self, puzzle: Puzzle) -> str:
-        """Generate a response for a successful puzzle attempt."""
-        response = f"\n{self.name} thinks carefully...\n"
-        response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+    def _generate_success_response(self, puzzle: Puzzle, print_with_delay: bool = False) -> str:
+        """Generate a response for a successful puzzle attempt.
         
-        # For the strawberry riddle
-        if "strawberry" in puzzle.prompt.lower():
-            response += f"Let me count each letter carefully:\n"
-            response += f"s-t-r-a-w-b-e-r-r-y\n"
-            response += f"I can see the 'r's appearing at positions 3, 8, and 9.\n\n"
+        Args:
+            puzzle: The puzzle to respond to
+            print_with_delay: If True, prints text with delays for interactive feel
         
-        response += f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n"
-        return response
-    
-    def _generate_failure_response(self, puzzle: Puzzle) -> str:
-        """Generate a response for a failed puzzle attempt."""
-        response = f"\n{self.name} thinks carefully...\n"
-        response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
-        
-        # For the strawberry riddle, generate plausible wrong answers
-        if "strawberry" in puzzle.prompt.lower():
-            wrong_answers = ["2", "1", "4"]
-            wrong_answer = random.choice(wrong_answers)
+        Returns:
+            The response text (only if print_with_delay is False)
+        """
+        if print_with_delay:
+            # Interactive mode with delays
+            print(f"\n{self.name} thinks carefully...")
+            time.sleep(1.5)
+            print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
+            time.sleep(1.0)
             
-            response += f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...\n"
-            response += f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n\n"
-            response += f"💭 {self.name} seems uncertain and made an error.\n"
-            response += f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n"
+            # For the strawberry riddle
+            if "strawberry" in puzzle.prompt.lower():
+                print(f"Let me count each letter carefully:")
+                time.sleep(1.0)
+                print(f"s-t-r-a-w-b-e-r-r-y")
+                time.sleep(1.5)
+                print(f"I can see the 'r's appearing at positions 3, 8, and 9.\n")
+                time.sleep(1.0)
+            
+            print(f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n")
+            return ""  # Already printed
         else:
-            response += f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n"
+            # Original behavior - return as string
+            response = f"\n{self.name} thinks carefully...\n"
+            response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+            
+            # For the strawberry riddle
+            if "strawberry" in puzzle.prompt.lower():
+                response += f"Let me count each letter carefully:\n"
+                response += f"s-t-r-a-w-b-e-r-r-y\n"
+                response += f"I can see the 'r's appearing at positions 3, 8, and 9.\n\n"
+            
+            response += f"✅ {self.name}: \"The answer is {puzzle.solution}!\"\n"
+            return response
+    
+    def _generate_failure_response(self, puzzle: Puzzle, print_with_delay: bool = False) -> str:
+        """Generate a response for a failed puzzle attempt.
         
-        return response
+        Args:
+            puzzle: The puzzle to respond to
+            print_with_delay: If True, prints text with delays for interactive feel
+        
+        Returns:
+            The response text (only if print_with_delay is False)
+        """
+        if print_with_delay:
+            # Interactive mode with delays
+            print(f"\n{self.name} thinks carefully...")
+            time.sleep(1.5)
+            print(f"🤔 Analyzing: '{puzzle.prompt}'\n")
+            time.sleep(1.0)
+            
+            # For the strawberry riddle, generate plausible wrong answers
+            if "strawberry" in puzzle.prompt.lower():
+                wrong_answers = ["2", "1", "4"]
+                wrong_answer = random.choice(wrong_answers)
+                
+                print(f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...")
+                time.sleep(1.5)
+                print(f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n")
+                time.sleep(1.0)
+                print(f"💭 {self.name} seems uncertain and made an error.")
+                time.sleep(0.5)
+                print(f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n")
+            else:
+                print(f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n")
+            return ""  # Already printed
+        else:
+            # Original behavior - return as string
+            response = f"\n{self.name} thinks carefully...\n"
+            response += f"🤔 Analyzing: '{puzzle.prompt}'\n\n"
+            
+            # For the strawberry riddle, generate plausible wrong answers
+            if "strawberry" in puzzle.prompt.lower():
+                wrong_answers = ["2", "1", "4"]
+                wrong_answer = random.choice(wrong_answers)
+                
+                response += f"Hmm, let me count... s-t-r-a-w-b-e-r-r-y...\n"
+                response += f"❌ {self.name}: \"I think the answer is {wrong_answer}.\"\n\n"
+                response += f"💭 {self.name} seems uncertain and made an error.\n"
+                response += f"(Model limitation: {self.name} with {self.memory} GB memory struggles with this task)\n"
+            else:
+                response += f"❌ {self.name}: \"I'm not sure... this is difficult for me.\"\n"
+            
+            return response
     
     def get_status(self) -> str:
         """
