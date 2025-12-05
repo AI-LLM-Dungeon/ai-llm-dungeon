@@ -112,8 +112,8 @@ Choose your location word from this grid. Your choice determines tier and team a
 | **5** | **Advanced** | Vein, Seam, Lode, Deposit | Mine, Shaft, Quarry, Excavation | Pit, Dig, Drift, Stope |
 | **6** | **Advanced+** | Cavern, Chasm, Expanse, Gorge | Hall, Chamber, Atrium, Rotunda | Dome, Gallery, Vestibule, Foyer |
 | **7** | **Expert** | Lake, River, Falls, Torrent | Reservoir, Aqueduct, Cistern, Canal | Basin, Pool, Spring, Wellspring |
-| **8** | **Expert+** | Ruins, Remnants, Wreckage, Decay | Vault, Archive, Sanctum, Reliquary | Maze, Labyrinth, Temple, Cloister |
-| **9** | **Master** | Abyss, Void, Maw, Chasm | Core, Nexus, Engine, Spire | Rift, Fissure, Fracture, Breach |
+| **8** | **Expert+** | Ruins, Remnants, Wreckage, Decay | Repository, Archive, Sanctum, Reliquary | Maze, Labyrinth, Temple, Cloister |
+| **9** | **Master** | Abyss, Void, Maw, Depth | Core, Nexus, Engine, Spire | Rift, Fissure, Fracture, Breach |
 | **10** | **Legendary** | Primordial, Eternal, Infinite, Wild | Terminus, Omega, Singularity, Apex | Origin, Genesis, Convergence, Crucible |
 
 **Total Words**: 120 (10 tiers × 3 teams × 4 words each)
@@ -229,10 +229,10 @@ Cavern, Chasm, Expanse, Gorge, Hall, Chamber, Atrium, Rotunda, Dome, Gallery, Ve
 Lake, River, Falls, Torrent, Reservoir, Aqueduct, Cistern, Canal, Basin, Pool, Spring, Wellspring
 
 ### Tier 8
-Ruins, Remnants, Wreckage, Decay, Vault, Archive, Sanctum, Reliquary, Maze, Labyrinth, Temple, Cloister
+Ruins, Remnants, Wreckage, Decay, Repository, Archive, Sanctum, Reliquary, Maze, Labyrinth, Temple, Cloister
 
 ### Tier 9
-Abyss, Void, Maw, Core, Nexus, Engine, Spire, Rift, Fissure, Fracture, Breach
+Abyss, Void, Maw, Depth, Core, Nexus, Engine, Spire, Rift, Fissure, Fracture, Breach
 
 ### Tier 10
 Primordial, Eternal, Infinite, Wild, Terminus, Omega, Singularity, Apex, Origin, Genesis, Convergence, Crucible
