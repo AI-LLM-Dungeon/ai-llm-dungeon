@@ -110,26 +110,20 @@ You can ask Pip for help with either part!
             # Check Part 1 (syllables)
             if answer == self.syllable_answer:
                 self.answered_part1 = True
+                self._last_correct_answer = "syllables"
                 return True
             return False
         else:
             # Check Part 2 (tokens)
-            return answer == self.token_answer
+            if answer == self.token_answer:
+                self._last_correct_answer = "tokens"
+                return True
+            return False
     
     def get_solution_explanation(self) -> str:
-        """Get the solution explanation."""
-        if not self.answered_part1:
-            return f"""
-✅ PART 1 SOLUTION: {self.syllable_answer} syllables
-
-Syllable breakdown:
-  • ar-ti-fi-cial = 4 syllables
-  • in-tel-li-gence = 4 syllables
-  • Total: 4 + 4 = 8 syllables
-
-Great! Now you understand the human way of breaking words.
-"""
-        else:
+        """Get the solution explanation for the last correct answer."""
+        # Check what was just answered
+        if hasattr(self, '_last_correct_answer') and self._last_correct_answer == "tokens":
             return f"""
 ✅ PART 2 SOLUTION: {self.token_answer} tokens
 
@@ -148,6 +142,18 @@ Token breakdown:
    Tokens are based on statistical patterns in text, not pronunciation.
    This is why LLMs sometimes struggle with tasks that require counting
    letters or syllables - they don't "see" words the way you do!
+"""
+        else:
+            # Part 1 solution
+            return f"""
+✅ PART 1 SOLUTION: {self.syllable_answer} syllables
+
+Syllable breakdown:
+  • ar-ti-fi-cial = 4 syllables
+  • in-tel-li-gence = 4 syllables
+  • Total: 4 + 4 = 8 syllables
+
+Great! Now you understand the human way of breaking words.
 """
 
 

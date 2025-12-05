@@ -495,8 +495,8 @@ or 'quit' to exit.
         if command.startswith("answer "):
             answer = command[7:].strip()
             if self.room1_puzzle.check_answer(answer):
-                # Check if we just completed part 1 or part 2
-                if self.room1_puzzle.answered_part1 and answer == self.room1_puzzle.token_answer:
+                # Check which part was just completed
+                if answer == self.room1_puzzle.token_answer and self.room1_puzzle.answered_part1:
                     # Completed part 2! Move to next room
                     word1 = self.passphrase_gen.get_word(1)
                     self.progress.add_word(word1)
@@ -513,7 +513,7 @@ You proceed to the next room...
 
 {self.room2_puzzle.get_puzzle_text()}
 """
-                else:
+                elif answer == self.room1_puzzle.syllable_answer:
                     # Completed part 1, show part 2
                     return f"""
 ✅ CORRECT! The answer is '{answer}'!
@@ -524,6 +524,8 @@ Now continue to Part 2...
 
 {self.room1_puzzle.get_puzzle_text()}
 """
+                else:
+                    return "❌ Something went wrong. Please try again."
             else:
                 if not self.room1_puzzle.answered_part1:
                     return "❌ Incorrect. Hint: Count the syllables carefully. ar-ti-fi-cial in-tel-li-gence"
