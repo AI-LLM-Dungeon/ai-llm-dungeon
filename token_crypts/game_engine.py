@@ -610,14 +610,8 @@ Boss Fight Commands:
     
     def _get_pip_help_room1(self, prompt: str) -> str:
         """Get Pip's helpful response for Room 1 token counting."""
-        # Get dynamic token breakdown from the puzzle
+        # Calculate the sum dynamically from the puzzle
         breakdown = self.room1_puzzle.get_token_breakdown()[:3]
-        token_lines = "\n".join([
-            f'   "{word}"' + ' ' * (12 - len(word)) + f'→ {["[token breakdown]"]}' + ' ' * 15 + f'= {tokens} token{"s" if tokens > 1 else ""}'
-            for word, tokens in breakdown
-        ])
-        
-        # Calculate the sum dynamically
         total = sum(tokens for _, tokens in breakdown)
         
         response = f"""
