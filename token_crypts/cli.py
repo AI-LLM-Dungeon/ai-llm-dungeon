@@ -1,6 +1,7 @@
 """Command-line interface for Token Crypts level."""
 
 import sys
+import time
 from typing import Optional
 from .game_engine import TokenCryptsEngine, GameState
 
@@ -31,11 +32,76 @@ class TokenCryptsCLI:
         """
         self.engine = TokenCryptsEngine(seed=seed, simulated_ollama=simulated)
         self.running = True
+        self.slow_text_enabled = True  # Can be toggled for testing
+    
+    def _slow_print(self, text: str, delay: float = 0.03) -> None:
+        """
+        Print text with a delay between characters for dramatic effect.
+        
+        Args:
+            text: The text to print
+            delay: Delay in seconds between characters (default 0.03)
+        """
+        if not self.slow_text_enabled:
+            print(text)
+            return
+        
+        for char in text:
+            print(char, end='', flush=True)
+            time.sleep(delay)
+        print()  # Newline at the end
+    
+    def _print_with_pause(self, text: str, section_delimiter: str = "\n\n") -> None:
+        """
+        Print text broken into sections with pauses between them.
+        For very long text, prompts user to continue.
+        
+        Args:
+            text: The text to print
+            section_delimiter: String that separates sections
+        """
+        if not self.slow_text_enabled:
+            print(text)
+            return
+        
+        sections = text.split(section_delimiter)
+        for i, section in enumerate(sections):
+            print(section, end='')
+            if i < len(sections) - 1:
+                print(section_delimiter, end='', flush=True)
+                # For longer sections, add a brief pause
+                if len(section) > 200:
+                    time.sleep(0.5)
+        print()  # Final newline
+    
+    def _should_pace_text(self, text: str) -> bool:
+        """
+        Determine if text should be paced based on length and content.
+        
+        Args:
+            text: The text to check
+            
+        Returns:
+            True if text should be paced
+        """
+        # Check for intro/victory markers
+        if "╔═══" in text or "TOKEN CRYPTS" in text or "VICTORY CHAMBER" in text:
+            return True
+        # Check for room transitions
+        if "═══════════" in text and len(text) > 500:
+            return True
+        # Long text blocks
+        if len(text) > 800:
+            return True
+        return False
     
     def start(self) -> None:
         """Start the CLI and enter the main game loop."""
         self._display_banner()
-        print(self.engine.get_intro_text())
+        
+        # Use paced printing for intro text
+        intro_text = self.engine.get_intro_text()
+        self._print_with_pause(intro_text)
         
         # Main game loop
         while self.running:
@@ -55,7 +121,11 @@ class TokenCryptsCLI:
                 # Process command
                 response = self.engine.process_command(user_input)
                 if response:
-                    print(response)
+                    # Apply pacing for large or special text blocks
+                    if self._should_pace_text(response):
+                        self._print_with_pause(response)
+                    else:
+                        print(response)
                 
             except KeyboardInterrupt:
                 print("\n\nGame interrupted. Type 'quit' to exit properly.")

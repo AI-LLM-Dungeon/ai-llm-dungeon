@@ -30,6 +30,9 @@ class TokenCountPuzzle:
     
     def get_puzzle_text(self) -> str:
         """Get the puzzle description."""
+        # Create the indexed word list
+        indexed_words = "\n".join([f"   {i+1}. {word}" for i, word in enumerate(self.words)])
+        
         return f"""
 ═══════════════════════════════════════════════════════════
                    SYLLABLE SANCTUARY
@@ -46,6 +49,9 @@ A glowing inscription reads:
    Sum the tokens of the first three words.
    Find the word at that position (1-indexed).
    Speak the word to unlock the first seal."
+
+The words in the sentence (1-indexed):
+{indexed_words}
 
 💡 HINT: Tokens are subword pieces. For example:
    - "the" → ["the"] = 1 token
