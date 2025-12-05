@@ -111,13 +111,41 @@ class Sidekick:
         # Simulate the LLM's attempt
         success = self._calculate_success()
         
-        # Generate response based on outcome
+        # Generate response based on outcome (explicitly pass False for backward compatibility)
         if success:
-            response = self._generate_success_response(puzzle)
+            response = self._generate_success_response(puzzle, print_with_delay=False)
         else:
-            response = self._generate_failure_response(puzzle)
+            response = self._generate_failure_response(puzzle, print_with_delay=False)
         
         return success, response
+    
+    def attempt_riddle_with_delays(self, puzzle: Puzzle) -> bool:
+        """
+        Attempt to solve a puzzle with delayed printing for interactive experience.
+        
+        This method prints the response text with time delays to simulate the model
+        thinking in real-time, creating a more immersive experience.
+        
+        Args:
+            puzzle: The puzzle to attempt
+            
+        Returns:
+            True if the riddle was solved successfully, False otherwise
+        """
+        if not self.active:
+            print(f"Error: {self.name} is not active. Please summon them first.")
+            return False
+        
+        # Simulate the LLM's attempt
+        success = self._calculate_success()
+        
+        # Generate and print response with delays
+        if success:
+            self._generate_success_response(puzzle, print_with_delay=True)
+        else:
+            self._generate_failure_response(puzzle, print_with_delay=True)
+        
+        return success
     
     def _generate_success_response(self, puzzle: Puzzle, print_with_delay: bool = False) -> str:
         """Generate a response for a successful puzzle attempt.

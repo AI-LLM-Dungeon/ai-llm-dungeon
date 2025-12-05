@@ -12,6 +12,10 @@ from .room import Room, create_room
 from .ollama_simulator import OllamaSimulator
 from .ascii_art import display_banner, display_victory, display_room_transition, display_shaman, slow_print, display_certificate, display_descend
 
+# ANSI color codes for terminal output
+COLOR_CYAN = '\033[96m'
+COLOR_RESET = '\033[0m'
+
 
 class GameEngine:
     """
@@ -659,17 +663,9 @@ class GameEngine:
         
         # Check if it's about strawberry
         if "strawberry" in user_question.lower() or "r" in user_question.lower():
-            # Get the riddle and have phi3 attempt it
+            # Get the riddle and have phi3 attempt it with delays
             riddle = self.puzzles["riddle_01"]
-            
-            # Use the sidekick's success calculation
-            success = self.player.active_sidekick._calculate_success()
-            
-            # Print with delays for interactive experience
-            if success:
-                self.player.active_sidekick._generate_success_response(riddle, print_with_delay=True)
-            else:
-                self.player.active_sidekick._generate_failure_response(riddle, print_with_delay=True)
+            success = self.player.active_sidekick.attempt_riddle_with_delays(riddle)
             
             print(">>> /bye")
             print("Exiting interactive session.\n")
@@ -740,7 +736,7 @@ class GameEngine:
                 print("The chest lid slowly rises, revealing a scroll inside.")
                 print("\nLlama3 8b continues: 'By the way, you've earned access to the Victory Chamber.'")
                 # Display password in cyan color for visibility
-                print("The Oracle reveals: 'The password to unlock it is: \033[96mOllama Apprentice\033[0m'")
+                print(f"The Oracle reveals: 'The password to unlock it is: {COLOR_CYAN}Ollama Apprentice{COLOR_RESET}'")
                 print("\n>>> /bye")
                 print("Exiting interactive session.\n")
                 
