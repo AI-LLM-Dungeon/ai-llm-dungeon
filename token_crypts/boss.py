@@ -1,6 +1,7 @@
 """Boss fight: Lexicon - The keyword filter pretending to be an AI."""
 
 import re
+import random
 from typing import Tuple, List
 
 
@@ -83,7 +84,6 @@ class LexiconBoss:
             "❌ INVALID REQUEST. Keyword filter triggered.",
         ]
         
-        import random
         base_message = random.choice(messages)
         
         hint_level = min(self.attempts // 3, 2)

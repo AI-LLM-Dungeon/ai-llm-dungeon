@@ -23,8 +23,10 @@ class TokenCountPuzzle:
         
         self.sentence = "The tokenizer breaks words into smaller pieces"
         self.words = self.sentence.split()
-        self.answer_position = 4  # "into" is at position 4
-        self.answer_word = self.words[self.answer_position - 1]
+        # Sum of first 3 words: 1 (The) + 2 (tokenizer) + 2 (breaks) = 5
+        # Word at position 5 (1-indexed) is "into"
+        self.answer_position = 5
+        self.answer_word = self.words[self.answer_position - 1]  # "into"
     
     def get_puzzle_text(self) -> str:
         """Get the puzzle description."""
@@ -83,30 +85,21 @@ You can use your sidekick Pip (tinyllama) to help count tokens!
         """Get the solution explanation."""
         return f"""
 ✅ SOLUTION:
-   "The" = 1 token
-   "tokenizer" = 2 tokens (token + izer)
-   "breaks" = 2 tokens (break + s)
+   Token breakdown:
+   - "The" = 1 token
+   - "tokenizer" = 2 tokens (token + izer)
+   - "breaks" = 2 tokens (break + s)
    
-   Sum: 1 + 2 + 2 = 5 tokens
+   Sum of first 3 words: 1 + 2 + 2 = 5 tokens
    
-   Words in sentence:
+   Word at position 5 (1-indexed) in the sentence:
    1. The
    2. tokenizer
    3. breaks
    4. words
-   5. into  ← Position 5! But wait...
+   5. into  ← This is the answer!
    
-   Actually, let me recalculate properly:
-   1. The (1)
-   2. tokenizer (2)
-   3. breaks (2)
-   Total of first 3 words = 1 + 2 + 2 = 5 tokens
-   
-   Word at position 4 in the sentence = "words"
-   (The puzzle asks for word at position [sum of first 3], but
-   that would be position 5 which is "into")
-   
-   Correct answer: "words" or "into" (depending on interpretation)
+   Correct answer: "into"
 """
 
 

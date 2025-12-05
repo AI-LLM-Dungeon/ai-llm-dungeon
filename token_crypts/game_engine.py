@@ -427,8 +427,7 @@ Type 'quit' to exit.
         
         if command.startswith("answer "):
             answer = command[7:].strip()
-            # The actual answer should be "words" based on the puzzle
-            if self.room1_puzzle.check_answer(answer) or answer in ["words", "into"]:
+            if self.room1_puzzle.check_answer(answer):
                 word1 = self.passphrase_gen.get_word(1)
                 self.progress.add_word(word1)
                 self.progress.complete_room("room_1")
