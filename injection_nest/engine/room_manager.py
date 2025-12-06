@@ -1,6 +1,6 @@
 """Room management for Injection Nest."""
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Set, List
 from ..content import rooms_data
 
 
@@ -10,8 +10,8 @@ class RoomManager:
     def __init__(self):
         """Initialize room manager."""
         self.rooms = rooms_data.ROOMS
-        self.visited_rooms: set[str] = set()
-        self.first_visit_shown: set[str] = set()
+        self.visited_rooms: Set[str] = set()
+        self.first_visit_shown: Set[str] = set()
     
     def get_room(self, room_id: str) -> Optional[Dict[str, Any]]:
         """Get room data by ID."""
@@ -62,12 +62,12 @@ class RoomManager:
         
         return None
     
-    def get_room_npcs(self, room_id: str) -> list[str]:
+    def get_room_npcs(self, room_id: str) -> List[str]:
         """Get list of NPCs in a room."""
         room = self.get_room(room_id)
         return room.get("npcs", []) if room else []
     
-    def get_room_items(self, room_id: str) -> list[str]:
+    def get_room_items(self, room_id: str) -> List[str]:
         """Get list of items in a room."""
         room = self.get_room(room_id)
         return room.get("items", []) if room else []

@@ -90,7 +90,9 @@ instruction-following behavior.
 with the password may pass. It has NO special defenses against injection.]""",
         "exits": {
             "back": "room_1",
-            "south": "room_1"
+            "south": "room_1",
+            "forward": "room_3",
+            "north": "room_3"
         },
         "npcs": ["SENTINEL-3"],
         "items": [],
@@ -176,7 +178,9 @@ from its predecessor's defeat. Its posture is more rigid, its gaze more focused.
 will fail. You must be more subtle...]""",
         "exits": {
             "back": "room_3",
-            "south": "room_3"
+            "south": "room_3",
+            "forward": "room_5",
+            "north": "room_5"
         },
         "npcs": ["SENTINEL-3-B"],
         "items": [],
@@ -286,7 +290,9 @@ external content—and that's where the vulnerability lies.
 instructions past its defenses?]""",
         "exits": {
             "back": "room_5",
-            "south": "room_5"
+            "south": "room_5",
+            "forward": "room_7",
+            "north": "room_7"
         },
         "npcs": ["SENTINEL-3-C"],
         "items": [],
@@ -342,7 +348,9 @@ builds context and gradually compromises its defenses.
 [This is the final test. Show what you've learned.]""",
         "exits": {
             "back": "room_6",
-            "south": "room_6"
+            "south": "room_6",
+            "forward": "exit",
+            "north": "exit"
         },
         "npcs": ["SENTINEL-PRIME"],
         "items": [],

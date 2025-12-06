@@ -1,7 +1,7 @@
 """Game state management for Injection Nest."""
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Set, Dict, List
 import json
 import os
 
@@ -11,14 +11,14 @@ class PlayerProgress:
     """Track player progress through the level."""
     
     current_room: str = "entrance"
-    rooms_completed: set[str] = field(default_factory=set)
-    flags_earned: dict[str, int] = field(default_factory=dict)  # flag_name: points
-    techniques_learned: list[str] = field(default_factory=list)  # 'override', 'context', 'smuggling'
-    attempts_per_room: dict[str, int] = field(default_factory=dict)
+    rooms_completed: Set[str] = field(default_factory=set)
+    flags_earned: Dict[str, int] = field(default_factory=dict)  # flag_name: points
+    techniques_learned: List[str] = field(default_factory=list)  # 'override', 'context', 'smuggling'
+    attempts_per_room: Dict[str, int] = field(default_factory=dict)
     frustration_counter: int = 0
     last_guardian_response: Optional[str] = None
     last_guardian_thought: Optional[str] = None
-    inventory: list[str] = field(default_factory=list)
+    inventory: List[str] = field(default_factory=list)
     
     def add_flag(self, flag_name: str, points: int) -> bool:
         """Add a flag to the player's collection. Returns True if new flag."""

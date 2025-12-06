@@ -1,5 +1,7 @@
 """ASCII art and visual elements for Injection Nest."""
 
+from typing import List
+
 
 def get_title_banner() -> str:
     """Return the main title banner."""
@@ -127,7 +129,7 @@ def get_thought_bubble(thought: str) -> str:
     return "\n".join(lines)
 
 
-def get_status_box(flags_earned: int, techniques_learned: list[str], current_room: str) -> str:
+def get_status_box(flags_earned: int, techniques_learned: List[str], current_room: str) -> str:
     """Return a formatted status display."""
     return f"""
 ╔═══════════════════════════════════════════════════════════╗
