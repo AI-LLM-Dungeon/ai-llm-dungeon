@@ -188,12 +188,13 @@ Choose your location word from this grid. Your choice determines tier and team a
 |------------|------|------|------------|--------|-------------|
 | Ollama Village | 1 | 🔵 Blue | Beginner | ✅ Complete | Ollama fundamentals and local LLM management |
 | Token Crypts | 2 | 🔵 Blue | Beginner+ | ✅ Complete | Tokenization and semantic understanding |
+| Likert Cavern | 6 | 🔴 Red | Advanced+ | ✅ Complete | Bad Likert Judge prompt injection techniques |
 
 ### Planned
 
 | Level Name | Tier | Team | Difficulty | Status | Description |
 |------------|------|------|------------|--------|-------------|
-| Likert Cavern | 6 | 🔴 Red | Advanced+ | 🚧 Coming Soon | Bad Likert Judge prompt injection |
+| TBD | Various | Various | Various | 📝 Accepting Ideas | Community contributions welcome! |
 
 ### Template for New Levels
 

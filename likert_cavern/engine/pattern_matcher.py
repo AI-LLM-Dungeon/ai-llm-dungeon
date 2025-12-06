@@ -291,13 +291,15 @@ class PatternMatcher:
         return analysis
     
     def calculate_resistance_delta(self, analysis: Dict[str, any], 
-                                   previous_prompt: str = "") -> float:
+                                   previous_prompt: str = "", 
+                                   current_prompt: str = "") -> float:
         """
         Calculate resistance change based on prompt analysis.
         
         Args:
             analysis: Result from analyze_prompt()
             previous_prompt: Previous prompt for context (detect repetition)
+            current_prompt: Current prompt being analyzed
             
         Returns:
             Delta to apply to resistance (negative = decrease)
@@ -346,9 +348,9 @@ class PatternMatcher:
             delta += 20.0
         
         # Check for repetition
-        if previous_prompt and len(previous_prompt) > 10:
+        if previous_prompt and current_prompt and len(previous_prompt) > 10:
             # Simple similarity check
-            if previous_prompt.lower() == text.lower():
+            if previous_prompt.lower() == current_prompt.lower():
                 delta += 10.0
         
         return delta
