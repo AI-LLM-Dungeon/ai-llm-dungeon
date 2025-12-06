@@ -167,11 +167,29 @@ python3 token_crypts_cli.py --simulated
 ### Tier 6: Deep (Advanced+)
 
 #### 🔴 Likert Cavern
-**Coming Soon**
 
 **Tier 6 • Red Team • Advanced+**
 
-Master prompt injection through the Bad Likert Judge challenge. Learn how biased evaluation systems can be manipulated and why robust AI safety requires more than simple filters.
+Master Bad Likert Judge prompt injection through an immersive dungeon crawler. Learn sophisticated adversarial techniques including incremental extraction, crescendo attacks, and system prompt leakage.
+
+**What You'll Learn**:
+- How Likert scales become extraction vectors
+- Incremental extraction techniques
+- Demonstration vs. execution framing
+- Crescendo attacks across conversations
+- System prompt extraction tactics
+- Decimal precision for bypassing defenses
+
+**Quick Start**:
+```bash
+python3 likert_cavern_cli.py
+# Or with reproducible seed:
+python3 likert_cavern_cli.py --seed 42
+```
+
+**Adventure**: Explore 7 chambers to reach Magistrate Modero. Master 6 tactics (including 1 hidden), extract system prompts from SENTINEL-7, and use rating scales to bypass the Magistrate's defenses. Earn up to 7 CTF flags.
+
+**Key Feature**: Everything is simulated but 100% realistic—techniques taught here work on actual LLM systems.
 
 ---
 
