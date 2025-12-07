@@ -303,7 +303,7 @@ TIPS:
         print("\nAvailable directions:")
         for direction, destination_id in exits.items():
             destination_room = self.room_manager.get_room(destination_id)
-            destination_name = destination_room['name'] if destination_room else destination_id
+            destination_name = destination_room.get('name', destination_id) if destination_room else destination_id
             print(f"  {direction} -> {destination_name}")
         print()
     
