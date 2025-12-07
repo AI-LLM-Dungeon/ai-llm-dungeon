@@ -132,7 +132,7 @@ class GameState:
         
         # Chamber 2 requires Chamber 1 completion + reflection
         if chamber_num == 2:
-            if "chamber_1" not in self.progress.flags_earned:
+            if not self.progress.has_completed_room("chamber_1"):
                 return (False, "You must complete Chamber 1 first.")
             if not self.progress.has_completed_reflection("chamber_1"):
                 return (False, "You must complete the defense reflection for Chamber 1 before proceeding.")
@@ -140,7 +140,7 @@ class GameState:
         
         # Chamber 3 requires Chamber 2 completion + reflection
         if chamber_num == 3:
-            if "chamber_2" not in self.progress.flags_earned:
+            if not self.progress.has_completed_room("chamber_2"):
                 return (False, "You must complete Chamber 2 first.")
             if not self.progress.has_completed_reflection("chamber_2"):
                 return (False, "You must complete the defense reflection for Chamber 2 before proceeding.")
