@@ -169,7 +169,7 @@ class InjectionCaveGame:
             self.show_help()
         elif cmd in ['look', 'l']:
             self.show_room()
-        elif cmd in ['go', 'move', 'north', 'south', 'east', 'west', 'forward', 'back', 'enter', 'out']:
+        elif cmd in ['go', 'move', 'north', 'south', 'east', 'west', 'northeast', 'southwest', 'forward', 'back', 'enter', 'out']:
             direction = args if args else cmd
             self.move(direction)
         elif cmd in ['inject', 'attack']:
@@ -196,6 +196,10 @@ class InjectionCaveGame:
             self.show_journal()
         elif cmd == 'map':
             print(ascii_art.get_cave_map())
+        elif cmd == 'ls':
+            self.list_exits()
+        elif cmd == 'pwd':
+            self.show_position_map()
         elif cmd in ['save']:
             self.save_game()
         elif cmd in ['load']:
@@ -219,6 +223,8 @@ NAVIGATION:
   look, l                  - Examine your surroundings
   go <direction>           - Move in a direction (north, south, east, west, etc.)
   <direction>              - Shortcut for go (e.g., 'north', 'forward')
+  ls                       - List available exits and their destinations
+  pwd                      - Show ASCII map with your current position marked
   map                      - Display cave map
 
 INTERACTION:
@@ -278,6 +284,72 @@ TIPS:
         
         self.game_state.transition_to_room(destination)
         self.show_room()
+    
+    def list_exits(self) -> None:
+        """List available exits from the current room."""
+        current_room_id = self.game_state.progress.current_room
+        current_room = self.room_manager.get_room(current_room_id)
+        
+        if not current_room:
+            print("Error: Unknown room")
+            return
+        
+        exits = current_room.get('exits', {})
+        
+        if not exits:
+            print("\nNo exits available from this room.\n")
+            return
+        
+        print("\nAvailable directions:")
+        for direction, destination_id in exits.items():
+            destination_room = self.room_manager.get_room(destination_id)
+            destination_name = destination_room.get('name', destination_id) if destination_room else destination_id
+            print(f"  {direction} -> {destination_name}")
+        print()
+    
+    def show_position_map(self) -> None:
+        """Show ASCII map with current position marked."""
+        current_room_id = self.game_state.progress.current_room
+        
+        # Map room IDs to their display labels
+        room_map = {
+            'cave_mouth': 'MOUTH',
+            'shadowtongue_alcove': 'ALCOVE',
+            'echos_pool': 'ECHO',
+            'whisper_grotto': 'WHISPER',
+            'main_cavern': 'MAIN',
+            'chamber_1': 'C1',
+            'chamber_2': 'C2',
+            'chamber_3': 'C3',
+            'vault': 'VAULT',
+            'final_exit': 'EXIT'
+        }
+        
+        # Build the map with current position marked
+        lines = [
+            "         [MOUTH]",
+            "            |",
+            "        [ALCOVE]",
+            "        /   |   \\",
+            "   [ECHO] [MAIN] [WHISPER]",
+            "          / | \\",
+            "      [C1][C2][C3]",
+            "            |",
+            "        [VAULT]",
+            "            |",
+            "        [EXIT]"
+        ]
+        
+        # Replace the current room with an asterisk
+        print()
+        for line in lines:
+            # Replace room labels with marked version if current
+            output_line = line
+            for room_id, label in room_map.items():
+                if room_id == current_room_id:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            print(output_line)
+        print()
     
     def inject(self, payload: str) -> None:
         """Attempt prompt injection on current guardian."""

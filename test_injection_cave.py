@@ -318,6 +318,70 @@ def test_rooms():
     print("  Rooms tests passed!\n")
 
 
+def test_navigation_commands():
+    """Test new navigation commands."""
+    print("Testing Navigation Commands...")
+    
+    from injection_cave_cli import InjectionCaveGame
+    
+    # Create a game instance
+    game = InjectionCaveGame(simulated=True)
+    
+    # Test northeast/southwest direction recognition
+    # Verify northeast and southwest are in the recognized directions
+    room = rooms_data.ROOMS["main_cavern"]
+    assert "northeast" in room["exits"]
+    assert room["exits"]["northeast"] == "chamber_3"
+    print("  ✓ Northeast direction exists in main_cavern")
+    
+    room = rooms_data.ROOMS["chamber_3"]
+    assert "southwest" in room["exits"]
+    assert room["exits"]["southwest"] == "main_cavern"
+    print("  ✓ Southwest direction exists in chamber_3")
+    
+    # Test that we can move with these directions
+    game.game_state.transition_to_room("main_cavern")
+    assert game.game_state.progress.current_room == "main_cavern"
+    
+    # Test ls command shows exits
+    import io
+    import sys
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    game.list_exits()
+    output = sys.stdout.getvalue()
+    sys.stdout = old_stdout
+    
+    assert "northeast" in output.lower()
+    assert "Chamber of Hidden Commands" in output or "chamber_3" in output
+    print("  ✓ ls command lists exits correctly")
+    
+    # Test pwd command shows map with position
+    sys.stdout = io.StringIO()
+    game.show_position_map()
+    output = sys.stdout.getvalue()
+    sys.stdout = old_stdout
+    
+    assert "[MAIN*]" in output
+    assert "[C1]" in output
+    assert "[C2]" in output
+    assert "[C3]" in output
+    print("  ✓ pwd command shows position correctly")
+    
+    # Test pwd from a different location
+    game.game_state.transition_to_room("chamber_1")
+    sys.stdout = io.StringIO()
+    game.show_position_map()
+    output = sys.stdout.getvalue()
+    sys.stdout = old_stdout
+    
+    assert "[C1*]" in output
+    assert "[MAIN]" in output  # Should not be marked
+    print("  ✓ pwd command marks correct room")
+    
+    print("  Navigation Commands tests passed!\n")
+
+
 def test_save_load():
     """Test save/load functionality."""
     print("Testing Save/Load...")
@@ -370,6 +434,7 @@ def run_all_tests():
         test_puzzles()
         test_content()
         test_rooms()
+        test_navigation_commands()
         test_save_load()
         
         print("="*70)
