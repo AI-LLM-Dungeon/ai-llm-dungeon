@@ -1,7 +1,7 @@
 """Game state management and room navigation for Synonym Gorge."""
 
 from dataclasses import dataclass, field
-from typing import Set, Dict, List, Optional
+from typing import Set, Dict, List, Optional, Tuple
 import json
 import os
 
@@ -142,7 +142,7 @@ class GameState:
         self.progress.current_room = room_id
         self.progress.visit_room(room_id)
     
-    def can_enter_room(self, room_id: str) -> tuple[bool, str]:
+    def can_enter_room(self, room_id: str) -> Tuple[bool, str]:
         """
         Check if player can enter a room.
         

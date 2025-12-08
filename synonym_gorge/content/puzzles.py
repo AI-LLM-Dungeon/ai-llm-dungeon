@@ -297,13 +297,12 @@ Points awarded: {points}"""
     return (True, feedback, min(points, 250))  # Cap at flag value
 
 
-def get_blocklist_display(barrier_id: Optional[str] = None, page: int = 1) -> str:
+def get_blocklist_display(barrier_id: Optional[str] = None) -> str:
     """
     Get formatted display of blocked words for a barrier.
     
     Args:
         barrier_id: Which barrier's blocklist to show (None = all)
-        page: Page number for pagination
     
     Returns:
         Formatted blocklist display

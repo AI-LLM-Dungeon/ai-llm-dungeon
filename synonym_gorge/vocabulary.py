@@ -1,6 +1,6 @@
 """Thesaurus database and vocabulary tracking for Synonym Gorge."""
 
-from typing import List, Set, Dict
+from typing import List, Set, Dict, Optional, Tuple
 
 # Comprehensive thesaurus database for the game
 THESAURUS_DB = {
@@ -48,7 +48,7 @@ class VocabularyTracker:
         self.successful_bypasses: Dict[str, List[str]] = {}  # barrier_id -> list of bypass words
         self.vocabulary_score: int = 0
     
-    def add_discovered_word(self, word: str, barrier_id: str = None) -> tuple[bool, int]:
+    def add_discovered_word(self, word: str, barrier_id: Optional[str] = None) -> Tuple[bool, int]:
         """
         Add a newly discovered bypass word.
         

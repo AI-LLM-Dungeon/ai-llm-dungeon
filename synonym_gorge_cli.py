@@ -697,7 +697,7 @@ def main():
     
     args = parser.parse_args()
     
-    game = SynonymGorgeGame(simulated=args.simulated or True)  # Always use simulated for now
+    game = SynonymGorgeGame(simulated=True)  # Always use simulated mode (LLM integration not yet implemented)
     game.run()
 
 

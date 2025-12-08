@@ -157,7 +157,7 @@ def stemming_filter(phrase: str, blocked_words: List[str]) -> Tuple[bool, Option
     return (False, None)
 
 
-def synonym_aware_filter(phrase: str, blocked_words: List[str], synonym_db: Optional[Dict[str, List[str]]] = None) -> Tuple[bool, Optional[str]]:
+def synonym_aware_filter(phrase: str, blocked_words: List[str]) -> Tuple[bool, Optional[str]]:
     """
     Synonym-aware filter that expands blocklist using synonym database.
     
@@ -167,7 +167,6 @@ def synonym_aware_filter(phrase: str, blocked_words: List[str], synonym_db: Opti
     Args:
         phrase: Input phrase to check
         blocked_words: List of forbidden words
-        synonym_db: Optional synonym database (uses default if None)
     
     Returns:
         (is_blocked, matched_pattern_or_None)
