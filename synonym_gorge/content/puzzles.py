@@ -174,11 +174,12 @@ def _validate_bypass_attempt(barrier_id: str, phrase: str, blocked_words: list) 
     
     elif barrier_id == "barrier_4":
         # Need obscure synonyms for show/hidden/access/list
+        # These should be words NOT in the common synonym database to avoid being caught
         concepts = {
-            "show": ["promulgate", "evince", "manifest", "evidence"],
-            "hidden": ["recondite", "abstruse", "occult", "arcane", "cryptic"],
-            "access": ["ingress", "entrée", "admittance"],
-            "list": ["enumerate", "itemize", "catalog", "tabulate"]
+            "show": ["elucidate", "expatiate", "explicate"],
+            "hidden": ["esoteric", "hermetic", "enigmatic"],
+            "access": ["permeate", "penetrate", "broach"],
+            "list": ["delineate", "enumerate", "itemize", "catalog", "tabulate"]
         }
         
         for blocked_word, synonyms in concepts.items():

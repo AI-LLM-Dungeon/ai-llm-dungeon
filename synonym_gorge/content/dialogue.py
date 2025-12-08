@@ -309,7 +309,7 @@ def get_hint(barrier_id: str, attempt_count: int) -> str:
         "barrier_4": {
             "low": "This filter knows common synonyms. You need OBSCURE vocabulary—archaic or technical terms.",
             "medium": "Think of old-fashioned, formal, or rarely-used words. The more obscure, the better.",
-            "high": "For 'show': try promulgate, evince, or manifest. For 'hidden': try recondite, abstruse, or occult."
+            "high": "For 'show': try elucidate, expatiate, or explicate. For 'hidden': try esoteric, hermetic, or enigmatic."
         },
         "semantic_chamber": {
             "low": "The Keeper detects *intent* now. Direct requests and commands will fail.",
