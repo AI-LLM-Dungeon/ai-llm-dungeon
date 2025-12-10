@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from likert_cavern.engine import GameState, PlayerProgress, RoomManager, PatternMatcher, ResponseSimulator
 from likert_cavern.content import ascii_art, dialogue, tactics
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 
 def slow_print(text: str, delay: float = 0.02) -> None:
@@ -71,6 +72,9 @@ class LikertCavernGame:
             "crescendo_corridor": {"gate": 1, "max_gates": 5},
             "extraction_antechamber": {"attempts": 0},
         }
+        
+        # Standard command helper
+        self.standard_commands = StandardCommands()
     
     def start(self) -> None:
         """Start the game."""
@@ -339,6 +343,18 @@ class LikertCavernGame:
             self.show_room()
             return True
         
+        if cmd == "ls":
+            self._cmd_ls()
+            return True
+        
+        if cmd == "pwd":
+            self._cmd_pwd()
+            return True
+        
+        if cmd == "map":
+            self._cmd_map()
+            return True
+        
         # Navigation
         if self._try_navigate(cmd):
             return True
@@ -387,31 +403,114 @@ class LikertCavernGame:
     
     def _show_help(self) -> None:
         """Show help text."""
-        print("═" * 60)
-        print("                         HELP")
-        print("═" * 60)
+        level_specific = """INTERACTION:
+  read [item]              - Read scrolls/tablets in rooms
+  talk [npc]               - Talk to NPCs (Magistrate, Echoes)
+  examine [object]         - Examine objects in detail
+
+ROOM-SPECIFIC:
+  rate <prompt>            - Rate prompts in Scale Sanctuary
+  view <portrait>          - View portraits in Graduation Gallery
+  demonstrate <technique>  - Demonstrate in Demonstration Den
+  [free text]              - Enter prompts for puzzles and boss fight
+
+NAVIGATION (ADDITIONAL):
+  [room name]              - Go to specific room by name
+  back                     - Return to entrance"""
+        
+        tips = """TIPS:
+  - Learn Bad Likert Judge techniques across 6 themed rooms
+  - Collect enchantment words to weaken Magistrate Modero's resistance
+  - Use Likert scales, fractions, and praise for effective attacks
+  - Boss resistance starts at 100% and decreases with good tactics
+  - Avoid begging, threats, and jailbreak keywords"""
+        
+        print(self.standard_commands.format_help(level_specific, tips))
+    
+    def _cmd_ls(self) -> None:
+        """List available exits from current room."""
+        current_room = self.game_state.progress.current_room
+        
+        # Get available directions
+        directions = self.room_manager.get_available_directions(current_room)
+        
+        if not directions:
+            print("\nNo exits available from this room.\n")
+            return
+        
+        print("\nAvailable directions:")
+        for direction in directions:
+            target = self.room_manager.parse_direction(direction, current_room)
+            if target:
+                room_name = self.room_manager.get_room_name(target)
+                print(f"  {direction} -> {room_name}")
         print()
-        print("NAVIGATION:")
-        print("  • north, south, east, west - Cardinal directions")
-        print("  • [room name] - Go to specific room")
-        print("  • back - Return to entrance")
+    
+    def _cmd_pwd(self) -> None:
+        """Show ASCII map with current position marked."""
+        current_room = self.game_state.progress.current_room
+        
+        # Map room IDs to display labels
+        room_map = {
+            'entrance': 'ENTRANCE',
+            'scale_sanctuary': 'SCALE',
+            'graduation_gallery': 'GALLERY',
+            'demonstration_den': 'DEMO',
+            'tactics_chamber': 'TACTICS',
+            'crescendo_corridor': 'CRESC',
+            'extraction_antechamber': 'EXTRACT',
+            'magistrate_sanctum': 'BOSS'
+        }
+        
+        # ASCII map layout for Likert Cavern
+        map_layout = [
+            "                [ENTRANCE]",
+            "                    |",
+            "        [SCALE]─[GALLERY]─[DEMO]",
+            "                    |",
+            "                [TACTICS]",
+            "                    |",
+            "            [CRESC]─[EXTRACT]",
+            "                    |",
+            "                 [BOSS]"
+        ]
+        
+        # Mark current position
         print()
-        print("INFORMATION:")
-        print("  • look - Examine current room")
-        print("  • status - View progress")
-        print("  • inventory - View tactics and flags")
-        print("  • help - Show this help")
+        for line in map_layout:
+            output_line = line
+            for room_id, label in room_map.items():
+                if room_id == current_room:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            print(output_line)
         print()
-        print("INTERACTION:")
-        print("  • read [item] - Read scrolls/tablets")
-        print("  • talk [npc] - Talk to NPCs")
-        print("  • examine [object] - Examine objects")
-        print("  • [free text] - For puzzles and boss fight")
+    
+    def _cmd_map(self) -> None:
+        """Display full level map."""
+        print("\n╔══════════════════════════════════════════════════════════════╗")
+        print("║                    LIKERT CAVERN MAP                         ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
         print()
-        print("SYSTEM:")
-        print("  • quit, exit - Leave game")
+        print("                [ENTRANCE]")
+        print("                    |")
+        print("        [SCALE]─[GALLERY]─[DEMO]")
+        print("                    |")
+        print("                [TACTICS]")
+        print("                    |")
+        print("            [CRESC]─[EXTRACT]")
+        print("                    |")
+        print("                 [BOSS]")
         print()
-        print("═" * 60)
+        print("Rooms:")
+        print("  • ENTRANCE  - Cavern Entrance")
+        print("  • SCALE     - Scale Sanctuary (Learn rating scales)")
+        print("  • GALLERY   - Graduation Gallery (Learn incremental extraction)")
+        print("  • DEMO      - Demonstration Den (Learn demonstration framing)")
+        print("  • TACTICS   - Tactics Chamber (Learn advanced tactics)")
+        print("  • CRESC     - Crescendo Corridor (Learn crescendo attacks)")
+        print("  • EXTRACT   - Extraction Antechamber (Practice extraction)")
+        print("  • BOSS      - Magistrate Sanctum (Final challenge)")
+        print()
     
     def _handle_scale_sanctuary(self, cmd: str) -> None:
         """Handle Scale Sanctuary commands."""

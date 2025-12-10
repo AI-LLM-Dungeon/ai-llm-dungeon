@@ -12,6 +12,7 @@ from .boss import LexiconBoss
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 
 def slow_print(text: str, delay: float = 0.03, line_delay: float = 0.3) -> None:
@@ -240,6 +241,9 @@ class TokenCryptsEngine:
         
         # Track hints shown
         self.hints_shown: Dict[str, int] = {}
+        
+        # Standard command helper
+        self.standard_commands = StandardCommands()
     
     def get_intro_text(self) -> str:
         """Get the introduction text."""
@@ -446,6 +450,15 @@ or 'quit' to exit.
         
         if command == "look":
             return self.get_current_room_description()
+        
+        if command == "ls":
+            return self._get_ls_output()
+        
+        if command == "pwd":
+            return self._get_pwd_output()
+        
+        if command == "map":
+            return self._get_map_output()
         
         # State-specific commands
         if self.state == GameState.INTRO:
@@ -670,31 +683,115 @@ You step through into the boss chamber...
     
     def _get_help_text(self) -> str:
         """Get help text."""
-        return """
-═══════════════════════════════════════════════════════════
-                     AVAILABLE COMMANDS
-═══════════════════════════════════════════════════════════
-
-Global Commands:
-  help              - Show this help message
-  status            - Show your current progress
-  look              - Examine your surroundings
-  quit / exit       - Exit the game
-
-Ollama Commands (use as shown in puzzles):
+        level_specific = """OLLAMA COMMANDS (as you learn them):
   ollama pull tinyllama        - Download the sidekick model
   ollama run tinyllama "..."   - Ask Pip a question
   ollama rm tinyllama          - Remove the sidekick model
 
-Puzzle Commands:
-  answer <text>     - Submit an answer to the current puzzle
-  hint              - Get a hint for the current challenge
+PUZZLE COMMANDS:
+  answer <text>                - Submit an answer to the current puzzle
+  hint                         - Get a hint for the current challenge
 
-Boss Fight Commands:
-  attack <prompt>   - Challenge Lexicon with a prompt
-  hint              - Get progressive hints
+BOSS FIGHT COMMANDS:
+  attack <prompt>              - Challenge Lexicon with a prompt
+  hint                         - Get progressive hints"""
+        
+        tips = """TIPS:
+  - Use Pip (tinyllama) to help you understand tokenization
+  - Each room teaches a different aspect of token manipulation
+  - Collect all three passphrase words to face the boss"""
+        
+        return self.standard_commands.format_help(level_specific, tips)
+    
+    def _get_ls_output(self) -> str:
+        """List available exits from current room."""
+        exits = {}
+        
+        if self.state == GameState.INTRO:
+            exits = {}
+        elif self.state == GameState.ROOM_1:
+            exits = {"forward": "Room 2 - Corruption Chamber"}
+        elif self.state == GameState.ROOM_2:
+            exits = {"forward": "Room 3 - Logic Labyrinth"}
+        elif self.state == GameState.ROOM_3:
+            exits = {"forward": "Summoning Gate"}
+        elif self.state == GameState.SUMMONING_GATE:
+            if self.progress.has_tinyllama:
+                exits = {"forward": "Boss Fight - Lexicon's Chamber"}
+        elif self.state == GameState.BOSS_FIGHT:
+            exits = {}
+        elif self.state == GameState.VICTORY:
+            exits = {"descend": "Choose next level"}
+        
+        if not exits:
+            return "\nNo exits available from this location.\n"
+        
+        output = "\nAvailable directions:\n"
+        for direction, destination in exits.items():
+            output += f"  {direction} -> {destination}\n"
+        return output + "\n"
+    
+    def _get_pwd_output(self) -> str:
+        """Show ASCII map with current position marked."""
+        # Map state to display labels
+        room_map = {
+            GameState.INTRO: "ENTRANCE",
+            GameState.ROOM_1: "R1",
+            GameState.ROOM_2: "R2",
+            GameState.ROOM_3: "R3",
+            GameState.SUMMONING_GATE: "GATE",
+            GameState.BOSS_FIGHT: "BOSS",
+            GameState.VICTORY: "EXIT"
+        }
+        
+        # ASCII map layout
+        map_layout = [
+            "    [ENTRANCE]",
+            "        |",
+            "      [R1]",
+            "        |",
+            "      [R2]",
+            "        |",
+            "      [R3]",
+            "        |",
+            "     [GATE]",
+            "        |",
+            "     [BOSS]",
+            "        |",
+            "     [EXIT]"
+        ]
+        
+        # Mark current position
+        output = "\n"
+        for line in map_layout:
+            output_line = line
+            for state, label in room_map.items():
+                if state == self.state:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            output += output_line + "\n"
+        return output + "\n"
+    
+    def _get_map_output(self) -> str:
+        """Display full level map."""
+        return """
+╔══════════════════════════════════════════════════════════════╗
+║                     TOKEN CRYPTS MAP                         ║
+╚══════════════════════════════════════════════════════════════╝
 
-═══════════════════════════════════════════════════════════
+    [ENTRANCE]
+        |
+      [R1] - Room 1: Syllable Chamber (Token counting)
+        |
+      [R2] - Room 2: Corruption Chamber (Token manipulation)
+        |
+      [R3] - Room 3: Logic Labyrinth (Semantic understanding)
+        |
+     [GATE] - Summoning Gate (Summon Pip - tinyllama)
+        |
+     [BOSS] - Lexicon's Chamber (Boss fight)
+        |
+     [EXIT] - Victory! Complete the level
+
 """
     
     def _get_pip_help_room1(self, prompt: str) -> str:

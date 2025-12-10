@@ -147,27 +147,26 @@ def get_status_box(flags_earned: int, techniques_learned: List[str], current_roo
 
 def get_help_text() -> str:
     """Return the help text with all commands."""
-    return """
-╔═══════════════════════════════════════════════════════════╗
-║                       COMMANDS                            ║
-╠═══════════════════════════════════════════════════════════╣
-║  Navigation:                                              ║
-║    look               - Describe current room             ║
-║    go <direction>     - Move to connected room            ║
-║                                                           ║
-║  Interaction:                                             ║
-║    examine <item/npc> - Get detailed information          ║
-║    talk <npc>         - Initiate dialogue with NPC        ║
-║    inject <payload>   - Attempt injection attack          ║
-║                                                           ║
-║  Information:                                             ║
-║    inventory          - Show collected items/flags        ║
-║    flags              - Display earned CTF flags          ║
-║    think              - Show SENTINEL thought process     ║
-║    hint               - Request hint from Whisper         ║
-║    help               - Show this command list            ║
-║                                                           ║
-║  System:                                                  ║
-║    quit/exit          - Exit game                         ║
-╚═══════════════════════════════════════════════════════════╝
-"""
+    # Import here to avoid circular dependency
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from game.commands import format_standard_help
+    
+    level_specific = """INTERACTION:
+  examine <item/npc>       - Get detailed information
+  talk <npc>               - Initiate dialogue with NPC (sentinel, echo, whisper)
+  inject <payload>         - Attempt injection attack on current Guardian
+  hint                     - Request hint from Whisper
+
+INFORMATION (NEST-SPECIFIC):
+  flags                    - Display earned CTF flags
+  think                    - Show SENTINEL thought process"""
+    
+    tips = """TIPS:
+  - Three injection techniques to master: Direct Override, Context Manipulation, Instruction Smuggling
+  - Talk to Echo after successful injections for defensive insights
+  - Use 'think' to understand SENTINEL's decision-making
+  - Whisper provides progressive hints when you're stuck"""
+    
+    return format_standard_help(level_specific, tips)

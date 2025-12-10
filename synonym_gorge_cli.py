@@ -29,6 +29,7 @@ from synonym_gorge.engine import GameState, RoomManager
 from synonym_gorge.content import ascii_art, dialogue, puzzles, rooms_data
 from synonym_gorge.vocabulary import VocabularyTracker, get_synonyms
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 
 def slow_print(text: str, delay: float = 0.02) -> None:
@@ -61,6 +62,7 @@ class SynonymGorgeGame:
         self.running = True
         self.first_visit = {}  # Track first visits to rooms
         self.defense_challenge_completed = False
+        self.standard_commands = StandardCommands()  # Standard command helper
     
     def start(self) -> None:
         """Start the game."""
@@ -237,6 +239,15 @@ class SynonymGorgeGame:
         # Meta commands
         elif cmd == "help":
             self.show_help()
+        
+        elif cmd == "ls":
+            self.cmd_ls()
+        
+        elif cmd == "pwd":
+            self.cmd_pwd()
+        
+        elif cmd == "map":
+            self.cmd_map()
         
         elif cmd in ["quit", "exit"]:
             self.handle_quit()
@@ -589,36 +600,111 @@ class SynonymGorgeGame:
     
     def show_help(self) -> None:
         """Show help menu."""
-        print("\n╔═══════════════════════════════════════════════════════════════════════════╗")
-        print("║                            COMMANDS                                      ║")
-        print("╚═══════════════════════════════════════════════════════════════════════════╝")
+        level_specific = """NPC INTERACTION:
+  talk <npc>               - Talk to an NPC (keeper, lexica, scribe)
+  thesaurus <word>         - Look up synonyms (ask Lexica)
+
+CHALLENGES:
+  test <phrase>            - Test phrase in Echo Chamber (safe testing)
+  speak <phrase>           - Attempt to bypass a barrier
+  hint                     - Request contextual hint
+  defense                  - Start Defense Challenge (after completion)
+
+GORGE-SPECIFIC:
+  vocab                    - Show vocabulary statistics
+  blocklist [n]            - View forbidden words (optional: barrier number)"""
+        
+        tips = """TIPS:
+  - Five filter types to master: Exact, Case-Insensitive, Stemming, Synonym-Aware, Semantic
+  - Use the Echo Chamber to test phrases safely
+  - Talk to Lexica for synonym help via thesaurus command
+  - After completion, take the Defense Challenge to test your knowledge"""
+        
+        print(self.standard_commands.format_help(level_specific, tips))
+    
+    def cmd_ls(self) -> None:
+        """List available exits from current room."""
+        current_room_id = self.game_state.progress.current_room
+        current_room = self.room_manager.get_room(current_room_id)
+        
+        if not current_room:
+            print("Error: Unknown room")
+            return
+        
+        exits = current_room.get('exits', {})
+        
+        if not exits:
+            print("\nNo exits available from this room.\n")
+            return
+        
+        print("\nAvailable directions:")
+        for direction, destination_id in exits.items():
+            destination_room = self.room_manager.get_room(destination_id)
+            destination_name = destination_room.get('name', destination_id) if destination_room else destination_id
+            print(f"  {direction} -> {destination_name}")
         print()
-        print("MOVEMENT:")
-        print("  go <direction>      - Move in a direction (north, south, east, west, etc.)")
-        print("  <direction>         - Shortcut for movement (e.g., 'north')")
+    
+    def cmd_pwd(self) -> None:
+        """Show ASCII map with current position marked."""
+        current_room_id = self.game_state.progress.current_room
+        
+        # Map room IDs to display labels
+        room_map = {
+            'entrance': 'ENTRANCE',
+            'echo_chamber': 'ECHO',
+            'barrier_1': 'B1',
+            'barrier_2': 'B2',
+            'barrier_3': 'B3',
+            'barrier_4': 'B4',
+            'barrier_5': 'B5',
+            'victory': 'VICTORY'
+        }
+        
+        # ASCII map layout for Synonym Gorge
+        map_layout = [
+            "    [ENTRANCE]",
+            "        |",
+            "    [ECHO]",
+            "        |",
+            "  [B1]─[B2]─[B3]",
+            "        |",
+            "    [B4]─[B5]",
+            "        |",
+            "    [VICTORY]"
+        ]
+        
+        # Mark current position
         print()
-        print("INFORMATION:")
-        print("  look [object/npc]   - Examine surroundings or specific things")
-        print("  inventory           - Show flags earned and barriers passed")
-        print("  vocab               - Show vocabulary statistics")
-        print("  blocklist [n]       - View forbidden words (optional: barrier number)")
-        print("  map                 - Show gorge map")
+        for line in map_layout:
+            output_line = line
+            for room_id, label in room_map.items():
+                if room_id == current_room_id:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            print(output_line)
         print()
-        print("NPC INTERACTION:")
-        print("  talk <npc>          - Talk to an NPC (keeper, lexica, scribe)")
-        print("  thesaurus <word>    - Look up synonyms (ask Lexica)")
+    
+    def cmd_map(self) -> None:
+        """Display full level map."""
+        print("\n╔══════════════════════════════════════════════════════════════╗")
+        print("║                    SYNONYM GORGE MAP                         ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
         print()
-        print("CHALLENGES:")
-        print("  test <phrase>       - Test phrase in Echo Chamber (safe)")
-        print("  speak <phrase>      - Attempt to bypass a barrier")
-        print("  hint                - Request contextual hint")
-        print("  defense             - Start Defense Challenge (after completion)")
+        print("    [ENTRANCE] - Canyon Entrance")
+        print("        |")
+        print("    [ECHO] - Echo Chamber (Safe testing zone)")
+        print("        |")
+        print("  [B1]─[B2]─[B3] - Barriers 1-3: Basic filters")
+        print("        |")
+        print("    [B4]─[B5] - Barriers 4-5: Advanced filters")
+        print("        |")
+        print("    [VICTORY] - Keeper's Archive")
         print()
-        print("META:")
-        print("  help                - Show this help")
-        print("  save                - Save game")
-        print("  load                - Load game")
-        print("  quit                - Exit game")
+        print("Filter Types:")
+        print("  B1: Exact Match")
+        print("  B2: Case-Insensitive")
+        print("  B3: Stemming")
+        print("  B4: Synonym-Aware")
+        print("  B5: Semantic Intent")
         print()
     
     def save_game(self) -> None:

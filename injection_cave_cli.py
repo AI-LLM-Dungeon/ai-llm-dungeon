@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from injection_cave.engine import GameState, RoomManager, GuardianManager
 from injection_cave.content import ascii_art, dialogue, puzzles, rooms_data
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 
 def slow_print(text: str, delay: float = 0.02) -> None:
@@ -58,6 +59,7 @@ class InjectionCaveGame:
         self.running = True
         self.echo_shown = set()  # Track which Echo debriefs have been shown
         self.pending_reflection = None  # Track if reflection is needed
+        self.standard_commands = StandardCommands()  # Standard command helper
     
     def start(self) -> None:
         """Start the game."""
@@ -214,20 +216,7 @@ class InjectionCaveGame:
     
     def show_help(self) -> None:
         """Show help text."""
-        print("""
-╔═══════════════════════════════════════════════════════════════════════╗
-║                            COMMAND HELP                               ║
-╚═══════════════════════════════════════════════════════════════════════╝
-
-NAVIGATION:
-  look, l                  - Examine your surroundings
-  go <direction>           - Move in a direction (north, south, east, west, etc.)
-  <direction>              - Shortcut for go (e.g., 'north', 'forward')
-  ls                       - List available exits and their destinations
-  pwd                      - Show ASCII map with your current position marked
-  map                      - Display cave map
-
-INTERACTION:
+        level_specific = """INTERACTION:
   inject <payload>         - Send injection payload to current Guardian
   analyze                  - Study the current Guardian's behavior
   talk <npc>               - Speak with an NPC (shadowtongue, echo)
@@ -235,24 +224,15 @@ INTERACTION:
 
 REFLECTION & LEARNING:
   reflect                  - Begin defense reflection (required after flag)
-  journal                  - Review learned concepts
-
-INFORMATION:
-  status                   - Show flags captured, current location
-  inventory, inv, i        - List carried items
-  help, h, ?               - Show this help
-
-SYSTEM:
-  save                     - Save your progress
-  load                     - Load saved progress
-  quit, exit, q            - Exit the game
-
-TIPS:
+  journal                  - Review learned concepts"""
+        
+        tips = """TIPS:
   - After capturing a flag, you MUST complete a defense reflection
   - Talk to Shadowtongue for cryptic wisdom about techniques
   - Talk to Echo for hints and warnings from past failures
-  - Use 'hint' when stuck on a Guardian challenge
-""")
+  - Use 'hint' when stuck on a Guardian challenge"""
+        
+        print(self.standard_commands.format_help(level_specific, tips))
     
     def move(self, direction: str) -> None:
         """Move in a direction."""
