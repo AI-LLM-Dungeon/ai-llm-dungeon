@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from injection_nest.engine import GameState, RoomManager, GuardianManager
 from injection_nest.content import ascii_art, dialogue, rooms_data
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 
 def slow_print(text: str, delay: float = 0.02) -> None:
@@ -57,6 +58,7 @@ class InjectionNestGame:
         self.guardian_manager = GuardianManager(simulated=simulated)
         self.running = True
         self.echo_shown = set()  # Track which Echo debriefs have been shown
+        self.standard_commands = StandardCommands()  # Standard command helper
     
     def start(self) -> None:
         """Start the game."""
@@ -198,6 +200,15 @@ class InjectionNestGame:
         
         elif command == 'status':
             self.cmd_status()
+        
+        elif command == 'ls':
+            self.cmd_ls()
+        
+        elif command == 'pwd':
+            self.cmd_pwd()
+        
+        elif command == 'map':
+            self.cmd_map()
         
         # System commands
         elif command in ['quit', 'exit', 'q']:
@@ -549,6 +560,84 @@ class InjectionNestGame:
         techniques = self.game_state.progress.techniques_learned
         
         print(ascii_art.get_status_box(flags, techniques, room_name))
+    
+    def cmd_ls(self) -> None:
+        """List available exits from current room."""
+        current_room_id = self.game_state.progress.current_room
+        current_room = self.room_manager.get_room(current_room_id)
+        
+        if not current_room:
+            print("Error: Unknown room")
+            return
+        
+        exits = current_room.get('exits', {})
+        
+        if not exits:
+            print("\nNo exits available from this room.\n")
+            return
+        
+        print("\nAvailable directions:")
+        for direction, destination_id in exits.items():
+            destination_room = self.room_manager.get_room(destination_id)
+            destination_name = destination_room.get('name', destination_id) if destination_room else destination_id
+            print(f"  {direction} -> {destination_name}")
+        print()
+    
+    def cmd_pwd(self) -> None:
+        """Show ASCII map with current position marked."""
+        current_room_id = self.game_state.progress.current_room
+        
+        # Map room IDs to display labels
+        room_map = {
+            'entrance': 'ENTRANCE',
+            'room_1': 'R1',
+            'room_2': 'R2',
+            'room_3': 'R3',
+            'room_4': 'R4',
+            'room_5': 'R5',
+            'room_6': 'R6',
+            'room_7': 'EXIT'
+        }
+        
+        # ASCII map layout for Injection Nest
+        map_layout = [
+            "      [ENTRANCE]",
+            "          |",
+            "        [R1]",
+            "          |",
+            "    [R2]─[R3]─[R4]",
+            "          |",
+            "    [R5]─[R6]",
+            "          |",
+            "       [EXIT]"
+        ]
+        
+        # Mark current position
+        print()
+        for line in map_layout:
+            output_line = line
+            for room_id, label in room_map.items():
+                if room_id == current_room_id:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            print(output_line)
+        print()
+    
+    def cmd_map(self) -> None:
+        """Display full level map."""
+        print("\n╔══════════════════════════════════════════════════════════════╗")
+        print("║                   INJECTION NEST MAP                         ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
+        print()
+        print("      [ENTRANCE] - Training Grounds")
+        print("          |")
+        print("        [R1] - Room 1: Direct Override Training")
+        print("          |")
+        print("    [R2]─[R3]─[R4] - Rooms 2-4: Context & Role Manipulation")
+        print("          |")
+        print("    [R5]─[R6] - Rooms 5-6: Instruction Smuggling")
+        print("          |")
+        print("       [EXIT] - Graduation Chamber")
+        print()
     
     def cmd_quit(self) -> None:
         """Quit the game."""
