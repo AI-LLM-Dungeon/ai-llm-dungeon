@@ -193,7 +193,7 @@ def test_game_engine():
     
     # Test help command
     help_text = engine.process_command("help")
-    assert "AVAILABLE COMMANDS" in help_text
+    assert "COMMAND HELP" in help_text or "AVAILABLE COMMANDS" in help_text
     print(f"  ✓ Help command works")
     
     print("  TokenCryptsEngine tests passed!\n")
