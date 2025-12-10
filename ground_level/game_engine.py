@@ -15,6 +15,7 @@ from .ascii_art import display_banner, display_victory, display_room_transition,
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from game.navigation import show_descend_menu
+from game.commands import StandardCommands
 
 # ANSI color codes for terminal output
 COLOR_CYAN = '\033[96m'
@@ -44,6 +45,7 @@ class GameEngine:
         self.current_room: Optional[Room] = None
         self.ollama = OllamaSimulator()
         self.game_running = True
+        self.standard_commands = StandardCommands()  # Standard command helper
         
         # Load all game data
         self._load_data()
@@ -129,6 +131,14 @@ class GameEngine:
             self._handle_status()
         elif command == "tips":
             self._handle_tips()
+        elif command in ["look", "l"]:
+            self._handle_look()
+        elif command == "ls":
+            self._handle_ls()
+        elif command == "pwd":
+            self._handle_pwd()
+        elif command == "map":
+            self._handle_map()
         
         # Room 0: Ollama Village
         elif self.player.current_room == 0:
@@ -999,17 +1009,30 @@ class GameEngine:
     
     def _handle_help(self) -> None:
         """Display help information."""
-        print("\n" + "="*60)
-        print("AVAILABLE COMMANDS")
-        print("="*60)
-        print("  help     - Show this help message")
-        print("  status   - View your current status")
-        print("  tips     - View unlocked knowledge tips")
-        print("  quit     - Exit the game")
-        print("\nROOM-SPECIFIC COMMANDS:")
-        print("  [Room text commands vary by room - follow the prompts!]")
-        print("  east/west - Move between rooms (when available)")
-        print("="*60 + "\n")
+        level_specific = """LEARNING:
+  learn                    - Begin or continue lessons with the Shaman
+  tips                     - View unlocked knowledge tips
+
+OLLAMA COMMANDS (as you learn them):
+  ollama                   - Base ollama command
+  ollama serve             - Start ollama server
+  ollama list              - List installed models
+  ollama pull <model>      - Download a model
+  ollama run <model>       - Run/chat with a model
+  ollama show <model>      - Show model information
+  ollama rm <model>        - Remove a model
+
+ROOM-SPECIFIC:
+  summon <model>           - Summon sidekick in Summoning Chamber
+  answer <text>            - Answer riddles in Riddle Hall
+  upgrade <sidekick>       - Upgrade sidekick in Upgrade Forge"""
+        
+        tips = """TIPS:
+  - Follow the Shaman's teachings in Ollama Village
+  - Room-specific commands vary - follow the prompts!
+  - Use 'east' or 'west' to move between rooms when available"""
+        
+        print(self.standard_commands.format_help(level_specific, tips))
     
     def _handle_status(self) -> None:
         """Display player status."""
@@ -1022,3 +1045,86 @@ class GameEngine:
     def _handle_tips(self) -> None:
         """Display unlocked tips."""
         self.player.display_unlocked_tips(self.tips)
+    
+    def _handle_look(self) -> None:
+        """Display current room description."""
+        if self.current_room:
+            print(f"\n{self.current_room.get_description()}\n")
+        else:
+            print("You are nowhere.")
+    
+    def _handle_ls(self) -> None:
+        """List available exits from current room."""
+        room_id = self.player.current_room
+        
+        # Define room connections
+        exits = {}
+        if room_id == 0:
+            if self.player.has_completed_objective("room0_complete"):
+                exits = {"east": "Summoning Chamber"}
+        elif room_id == 1:
+            exits = {"west": "Ollama Village"}
+            if self.player.active_sidekick:
+                exits["east"] = "Riddle Hall"
+        elif room_id == 2:
+            exits = {"west": "Summoning Chamber"}
+            if self.player.has_completed_objective("room2_complete"):
+                exits["east"] = "Upgrade Forge"
+        elif room_id == 3:
+            exits = {"west": "Riddle Hall"}
+            if self.player.has_completed_objective("room3_complete"):
+                exits["east"] = "Victory Chamber"
+        elif room_id == 4:
+            exits = {"west": "Upgrade Forge"}
+        
+        if not exits:
+            print("\nNo exits available from this room yet.\n")
+            return
+        
+        print("\nAvailable directions:")
+        for direction, destination in exits.items():
+            print(f"  {direction} -> {destination}")
+        print()
+    
+    def _handle_pwd(self) -> None:
+        """Show ASCII map with current position marked."""
+        room_id = self.player.current_room
+        
+        # Map room IDs to display labels
+        room_map = {
+            0: "VILLAGE",
+            1: "SUMMON",
+            2: "RIDDLE",
+            3: "FORGE",
+            4: "VICTORY"
+        }
+        
+        # ASCII map layout
+        map_layout = [
+            "    [VILLAGE]───[SUMMON]───[RIDDLE]───[FORGE]───[VICTORY]"
+        ]
+        
+        # Mark current position
+        print()
+        for line in map_layout:
+            output_line = line
+            for rid, label in room_map.items():
+                if rid == room_id:
+                    output_line = output_line.replace(f"[{label}]", f"[{label}*]")
+            print(output_line)
+        print()
+    
+    def _handle_map(self) -> None:
+        """Display full level map."""
+        print("\n╔══════════════════════════════════════════════════════════════╗")
+        print("║                      OLLAMA VILLAGE MAP                      ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
+        print()
+        print("    [VILLAGE]───[SUMMON]───[RIDDLE]───[FORGE]───[VICTORY]")
+        print()
+        print("  • VILLAGE     - Ollama Village (Learn Ollama basics)")
+        print("  • SUMMON      - Summoning Chamber (Summon your sidekick)")
+        print("  • RIDDLE      - Riddle Hall (Solve riddles with your sidekick)")
+        print("  • FORGE       - Upgrade Forge (Upgrade your sidekick)")
+        print("  • VICTORY     - Victory Chamber (Complete the level)")
+        print()
